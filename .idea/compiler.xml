@@ -25,10 +25,10 @@
         <module name="roller-webapp" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="roller-project" target="1.5" />
-      <module name="roller-release" target="1.5" />
-      <module name="roller-webapp" target="1.6" />
+    <bytecodeTargetLevel target="1.7">
+      <module name="roller-project" target="1.7" />
+      <module name="roller-release" target="1.7" />
+      <module name="roller-webapp" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>
