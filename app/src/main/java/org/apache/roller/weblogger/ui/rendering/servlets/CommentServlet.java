@@ -49,14 +49,8 @@ import org.apache.roller.weblogger.ui.rendering.plugins.comments.CommentValidati
 import org.apache.roller.weblogger.ui.rendering.plugins.comments.DefaultCommentAuthenticator;
 import org.apache.roller.weblogger.ui.rendering.util.WeblogCommentRequest;
 import org.apache.roller.weblogger.ui.rendering.util.WeblogEntryCommentForm;
-import org.apache.roller.weblogger.util.GenericThrottle;
-import org.apache.roller.weblogger.util.IPBanList;
-import org.apache.roller.weblogger.util.MailUtil;
-import org.apache.roller.weblogger.util.I18nMessages;
-import org.apache.roller.weblogger.util.RollerMessages;
+import org.apache.roller.weblogger.util.*;
 import org.apache.roller.weblogger.util.RollerMessages.RollerMessage;
-import org.apache.roller.weblogger.util.URLUtilities;
-import org.apache.roller.weblogger.util.Utilities;
 import org.apache.roller.weblogger.util.cache.CacheManager;
 
 /**
@@ -384,8 +378,7 @@ public class CommentServlet extends HttpServlet {
                     // Send email notifications only to subscribers if comment
                     // is 100% valid
                     boolean notifySubscribers = (validationScore == RollerConstants.PERCENT_100);
-                    MailUtil.sendEmailNotification(comment, messages,
-                            messageUtils, notifySubscribers);
+                    MailUtil.INSTANCE.sendEmailNotification(comment, messages, messageUtils, notifySubscribers);
 
                     // only re-index/invalidate the cache if comment isn't
                     // moderated

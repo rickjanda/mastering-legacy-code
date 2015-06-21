@@ -124,9 +124,9 @@ public class MembersInvite extends UIAction {
 
                 addMessage("inviteMember.userInvited");
 
-                if (MailUtil.isMailConfigured()) {
+                if (MailUtil.INSTANCE.isMailConfigured()) {
                     try {
-                        MailUtil.sendWeblogInvitation(getActionWeblog(), user);
+                        MailUtil.INSTANCE.sendWeblogInvitation(getActionWeblog(), user);
                     } catch (WebloggerException e) {
                         // TODO: this should be an error except that struts2 misbehaves
                         // when we chain this action to the next one thinking that an error

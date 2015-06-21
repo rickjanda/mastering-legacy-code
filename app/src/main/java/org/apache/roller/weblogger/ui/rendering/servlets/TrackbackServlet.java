@@ -190,10 +190,8 @@ public class TrackbackServlet extends HttpServlet {
                     }
                     
                     // Send email notifications
-                    MailUtil.sendEmailNotification(comment, messages, 
-                            I18nMessages.getMessages(trackbackRequest.getLocaleInstance()),
-                            validationScore == RollerConstants.PERCENT_100);
-                    
+                    MailUtil.INSTANCE.sendEmailNotification(comment, messages, I18nMessages.getMessages(trackbackRequest.getLocaleInstance()), validationScore == RollerConstants.PERCENT_100);
+
                     if (ApprovalStatus.PENDING.equals(comment.getStatus())) {
                         pw.println(this.getSuccessResponse("Trackback submitted to moderator"));
                     } else {

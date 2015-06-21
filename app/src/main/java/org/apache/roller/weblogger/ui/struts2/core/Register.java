@@ -249,7 +249,7 @@ public class Register extends UIAction implements ServletRequestAware {
                 if (activationEnabled && ud.getActivationCode() != null) {
                     try {
                         // send activation mail to the user
-                        MailUtil.sendUserActivationEmail(ud);
+                        MailUtil.INSTANCE.sendUserActivationEmail(ud);
                     } catch (WebloggerException ex) {
                         log.error("Error sending activation email to - " + ud.getEmailAddress(), ex);
                     }
