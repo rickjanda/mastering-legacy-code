@@ -18,19 +18,19 @@
 
 package org.apache.roller.weblogger.ui.rendering.plugins.comments;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ResourceBundle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
+import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 import org.apache.roller.weblogger.util.RollerMessages;
+
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ResourceBundle;
 
 
 /**
@@ -39,24 +39,30 @@ import org.apache.roller.weblogger.util.RollerMessages;
  * You can get a free personal use key by registering as a user at wordpress.com.
  * See Akismet site for API details (http://akismet.com/development/api/)
  */
-public class AkismetCommentValidator implements CommentValidator { 
-    private static Log log = LogFactory.getLog(AkismetCommentValidator.class);    
-    private ResourceBundle bundle = ResourceBundle.getBundle("ApplicationResources");
+public class AkismetCommentValidator implements CommentValidator {
+    private static Log log = LogFactory.getLog(AkismetCommentValidator.class);
+    private ResourceBundle bundle;
     private String apikey;
-    
+
     /** Creates a new instance of AkismetCommentValidator */
     public AkismetCommentValidator() {
         apikey = WebloggerConfig.getProperty("comment.validator.akismet.apikey");
+        bundle = ResourceBundle.getBundle("ApplicationResources");
     }
 
     public String getName() {
         return bundle.getString("comment.validator.akismetName");
     }
 
+    AkismetCommentValidator(String apikey, ResourceBundle resourceBundle) {
+        this.apikey = apikey;
+        this.bundle = resourceBundle;
+    }
+
     public int validate(WeblogEntryComment comment, RollerMessages messages) {
         StringBuilder sb = new StringBuilder();
         sb.append("blog=").append(
-            WebloggerFactory.getWeblogger().getUrlStrategy().getWeblogURL(comment.getWeblogEntry().getWebsite(), null, true)).append("&");
+                getWeblogURL(comment.getWeblogEntry().getWebsite())).append("&");
         sb.append("user_ip="        ).append(comment.getRemoteHost()).append("&");
         sb.append("user_agent="     ).append(comment.getUserAgent()).append("&");
         sb.append("referrer="       ).append(comment.getReferrer()).append("&");
@@ -72,16 +78,16 @@ public class AkismetCommentValidator implements CommentValidator {
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
 
-            conn.setRequestProperty("User_Agent", "Roller " + WebloggerFactory.getWeblogger().getVersion()); 
-            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded;charset=utf8"); 
+            conn.setRequestProperty("User_Agent", "Roller " + getWebLoggerVersion());
+            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded;charset=utf8");
             conn.setRequestProperty("Content-length", Integer.toString(sb.length()));
 
-            OutputStreamWriter osr = new OutputStreamWriter(conn.getOutputStream());
+            OutputStreamWriter osr = new OutputStreamWriter(getOutputStreamFrom(conn));
             osr.write(sb.toString(), 0, sb.length());
             osr.flush();
             osr.close();
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream())); 
+            BufferedReader br = new BufferedReader(new InputStreamReader(getInputStreamFrom(conn)));
             String response = br.readLine();
             if ("true".equals(response)) {
                 messages.addError("comment.validator.akismetMessage");
@@ -95,6 +101,22 @@ public class AkismetCommentValidator implements CommentValidator {
         }
         // interpreting error as spam: better safe than sorry?
         return 0;
+    }
+
+    InputStream getInputStreamFrom(URLConnection conn) throws IOException {
+        return conn.getInputStream();
+    }
+
+    OutputStream getOutputStreamFrom(URLConnection conn) throws IOException {
+        return conn.getOutputStream();
+    }
+
+    String getWebLoggerVersion() {
+        return WebloggerFactory.getWeblogger().getVersion();
+    }
+
+    String getWeblogURL(Weblog website) {
+        return WebloggerFactory.getWeblogger().getUrlStrategy().getWeblogURL(website, null, true);
     }
 }
 
