@@ -79,7 +79,18 @@ public class Comments extends UIAction {
     // a non-zero value here indicates bulk removal is a valid option
     private int bulkDeleteCount = 0;
 
+    private final MailUtil mailUtil;
+
     public Comments() {
+        this.actionName = "comments";
+        this.desiredMenu = "editor";
+        this.pageTitle = "commentManagement.title";
+        mailUtil = new MailUtil();
+    }
+
+    // Test constructor
+    Comments(MailUtil mailUtil) {
+        this.mailUtil = mailUtil;
         this.actionName = "comments";
         this.desiredMenu = "editor";
         this.pageTitle = "commentManagement.title";
@@ -375,10 +386,10 @@ public class Comments extends UIAction {
             CacheManager.invalidate(getActionWeblog());
 
             // if required, send notification for all comments changed
-            if (MailUtil.INSTANCE.isMailConfigured()) {
+            if (mailUtil.isMailConfigured()) {
                 I18nMessages resources = I18nMessages
                         .getMessages(getActionWeblog().getLocaleInstance());
-                MailUtil.INSTANCE.sendEmailApprovalNotifications(approvedComments, resources);
+                mailUtil.sendEmailApprovalNotifications(approvedComments, resources);
             }
 
             // if we've got entries to reindex then do so
