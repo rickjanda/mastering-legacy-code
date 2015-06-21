@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="roller-webapp:war">
+    <output-path>$PROJECT_DIR$/app/target</output-path>
+    <root id="archive" name="roller.war">
+      <element id="artifact" artifact-name="roller-webapp:war exploded" />
+    </root>
+  </artifact>
+</component>

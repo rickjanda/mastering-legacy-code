@@ -1,0 +1,89 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.roller</groupId>
+    <artifactId>roller-project</artifactId>
+    <version>5.1.0</version>
+    <packaging>pom</packaging>
+
+    <prerequisites>
+        <maven>3.0.5</maven>
+    </prerequisites>
+
+    <name>Roller</name>
+    <description>
+        Roller is an open source blog server built with open source Java
+        libraries including Struts2, Velocity, ROME and Guice.
+    </description>
+    <url>http://roller.apache.org</url>
+    <inceptionYear>2002</inceptionYear>
+
+    <scm>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/roller/trunk</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/roller/trunk</developerConnection>
+        <url>http://svn.apache.org/viewvc/roller/trunk</url>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <derby.version>10.10.2.0</derby.version>
+    </properties>
+
+    <modules>
+        <module>app</module>
+    </modules>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.0</version>
+                    <configuration>
+                        <source>1.6</source>
+                        <target>1.6</target>
+                        <fork>true</fork>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-idea-plugin</artifactId>
+                    <version>2.2</version>
+                    <configuration>
+                        <downloadSources>true</downloadSources>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>9.0.4.v20130625</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.btmatthews.maven.plugins.inmemdb</groupId>
+                    <artifactId>inmemdb-maven-plugin</artifactId>
+                    <version>1.4.2</version>
+                    <configuration>
+                        <monitorKey>inmemdb</monitorKey>
+                        <monitorPort>11527</monitorPort>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+     </build>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.11</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>

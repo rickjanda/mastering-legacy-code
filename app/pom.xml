@@ -1,0 +1,647 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.apache.roller</groupId>
+        <artifactId>roller-project</artifactId>
+        <version>5.1.0</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <name>Roller webapp</name>
+    <artifactId>roller-webapp</artifactId>
+    <packaging>war</packaging>
+
+    <properties>
+        <testOutputDirectory>${project.build.testOutputDirectory}</testOutputDirectory>
+        <testMediaDir>${project.build.testOutputDirectory}${file.separator}mediafiles</testMediaDir>
+        <testUploadsDir>${project.build.testOutputDirectory}${file.separator}uploadsdir</testUploadsDir>
+        <testThemesDir>${project.build.testOutputDirectory}${file.separator}themes</testThemesDir>
+        <testIndexDir>${project.build.testOutputDirectory}${file.separator}index</testIndexDir>
+        <testPlanetCache>${project.build.testOutputDirectory}${file.separator}planetcache</testPlanetCache>
+        <lucene.version>4.9.0</lucene.version>
+        <spring.version>4.0.6.RELEASE</spring.version>
+        <spring.security.version>3.2.5.RELEASE</spring.security.version>
+    </properties>
+
+    <dependencies>
+
+        <!-- Eclipselink JPA is the default JPA implementation used by
+             Roller, comment out this dependency and uncomment Hibernate's
+             to use that stack instead.
+
+             Logging, other special configuration during JUnit tests can be
+             placed in the src/test/resources/roller-custom.properties
+             file.
+         -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
+            <version>2.5.2</version>
+        </dependency>
+
+        <!-- Alternative testing with Hibernate (used by default with JBoss)
+             Important: set hibernate.transaction.factory_class=org.hibernate.transaction.JDBCTransactionFactory
+             in your roller-custom.properties if using Hibernate with Tomcat
+
+             org.javassist:javassist:3.15.0 cannot replace differently named javassist:javassist:3.11.0
+             always provided by struts2-spring-plugin so filtering it out; already provided by JBoss anyway
+
+             Note: Apache cannot distribute Hibernate due to it being LGPL, so these dependencies must be
+             commented out in trunk.  We have this dependency declaration to help with testing on JBoss
+             which uses Hibernate.
+        -->
+        <!--dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>4.2.3.Final</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.6.1</version>
+            <scope>runtime</scope>
+        </dependency-->
+
+        <!-- To test with OpenJPA instead of EclipseLink, will need to add OpenJPA
+             dependencies and static bytecode enhancement of the generated JPA classes
+             to this pom.xml.  Check the Roller source code repository for a copy of
+             this pom.xml prior to July 2013 for the necessary OpenJPA configuration -->
+
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <scope>compile</scope>
+            <version>${lucene.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+            <scope>compile</scope>
+            <version>${lucene.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.xmlrpc</groupId>
+            <artifactId>xmlrpc-common</artifactId>
+            <version>3.1.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.xmlrpc</groupId>
+            <artifactId>xmlrpc-client</artifactId>
+            <version>3.1.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.xmlrpc</groupId>
+            <artifactId>xmlrpc-server</artifactId>
+            <version>3.1.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ws.commons.util</groupId>
+            <artifactId>ws-commons-util</artifactId>
+            <version>1.0.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>net.oauth.core</groupId>
+            <artifactId>oauth-provider</artifactId>
+            <scope>compile</scope>
+            <version>20100527</version>
+        </dependency>
+
+        <!-- web -->
+
+        <dependency>
+	        <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome-fetcher</artifactId>
+            <version>1.5.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome-propono</artifactId>
+            <version>1.5.0</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>xmlrpc</groupId>
+                    <artifactId>xmlrpc-common</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xmlrpc</groupId>
+                    <artifactId>xmlrpc-client</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.7</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- spring deps -->
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>aopalliance</groupId>
+                    <artifactId>aopalliance</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring.security.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-ldap</artifactId>
+            <version>${spring.security.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-openid</artifactId>
+            <version>${spring.security.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-taglibs</artifactId>
+            <version>${spring.security.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-web</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-acl</artifactId>
+            <version>${spring.security.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-jdbc</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-spring-plugin</artifactId>
+            <version>2.3.16.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-tiles-plugin</artifactId>
+            <version>2.3.16.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>xml-security</groupId>
+            <artifactId>xmlsec</artifactId>
+            <version>1.3.0</version>
+        </dependency>
+
+        <!-- Java EE deps -->
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.7</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.activation</groupId>
+                    <artifactId>activation</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.2</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.4.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.9</version>
+        </dependency>
+
+        <!-- test deps -->
+
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbynet</artifactId>
+            <version>${derby.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.9.4</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>${derby.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+
+        <finalName>roller</finalName>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <attachClasses>true</attachClasses>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <configuration>
+                    <webApp>
+                        <contextPath>/roller</contextPath>
+                    </webApp>
+                    <jettyXml>src/test/resources/jetty.xml</jettyXml>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>roller.custom.config</name>
+                            <value>${project.build.directory}/test-classes/roller-jettyrun.properties</value>
+                        </systemProperty>
+                    </systemProperties>
+                </configuration>
+                <dependencies>
+                    <!-- Dependencies needed when using mvn jetty:run, not mvn test -->
+                    <dependency>
+                        <groupId>org.apache.derby</groupId>
+                        <artifactId>derby</artifactId>
+                        <version>${derby.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.derby</groupId>
+                        <artifactId>derbyclient</artifactId>
+                        <version>${derby.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <!-- Allow for standalone Tomcat deployment
+                 using mvn tomcat7:redeploy (See
+                 http://www.jroller.com/gmazza/entry/web_service_tutorial#maventomcat
+                 for necessary config info)
+            -->
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <server>myTomcat</server>
+                    <path>/${project.build.finalName}</path>
+                </configuration>
+            </plugin>
+
+            <!-- Activates the Derby database for unit tests and mvn jetty:run -->
+            <plugin>
+                <groupId>com.btmatthews.maven.plugins.inmemdb</groupId>
+                <artifactId>inmemdb-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>run</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <daemon>true</daemon>
+                            <type>derby</type>
+                            <database>rollerdb</database>
+                            <username>APP</username>
+                            <password>APP</password>
+                            <port>4224</port>
+                            <sources>
+                                <script>
+                                    <sourceFile>${pom.basedir}/target/dbscripts/derby/createdb.sql</sourceFile>
+                                </script>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+
+                <executions>
+
+                    <execution>
+                        <id>copy-main-resources</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/classes</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>copy-dbscripts-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <includeEmptyDirs>true</includeEmptyDirs>
+                            <outputDirectory>${basedir}/target/dbscripts</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/resources/sql</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                   
+                    <execution>
+                        <id>copy-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/roller/WEB-INF/classes/dbscripts</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>target/dbscripts</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>**/*.sql</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                </executions>
+                
+                <configuration>
+                    <includeEmptyDirs>true</includeEmptyDirs>
+                </configuration>
+
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <systemProperties>
+                        <property>
+                            <name>project.build.directory</name>
+                            <value>${basedir}/target</value>
+                        </property>
+                    </systemProperties>
+                    <!--excludes>
+                        <exclude>**/??.java</exclude>
+                    </excludes-->
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+
+                <executions>
+                    <execution>
+                        <id>gen-db-scripts</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <taskdef name="texen"
+                                         classname="org.apache.velocity.texen.ant.TexenTask"
+                                         classpathref="maven.compile.classpath"/>
+                                <texen
+                                    controlTemplate  ="control.vm"
+                                    contextProperties="${basedir}/src/main/resources/sql/dbscripts.properties"
+                                    templatePath     ="${basedir}/src/main/resources/sql"
+                                    outputDirectory  ="${basedir}/target/dbscripts"
+                                    outputFile       ="README.txt"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <doUpdate>false</doUpdate>
+                    <revisionOnScmFailure>UNKNOWN</revisionOnScmFailure>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/../app/src/main/webapp/</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>themes/**</include>
+                </includes>
+            </testResource>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/**</include>
+                </includes>
+            </testResource>
+        </testResources>
+
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>org/**</include>
+                </includes>
+                <excludes>
+                    <exclude>**/sql/**</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <!-- ensure version gets substitution -->
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>roller-version.properties</include>
+                </includes>
+            </resource>
+        </resources>
+
+    </build>
+
+    <reporting>
+        <plugins>
+
+            <plugin>
+                <groupId>com.google.testability-explorer</groupId>
+                <artifactId>maven-testability-plugin</artifactId>
+                <version>1.3.3</version>
+                <configuration>
+                    <whiteList>org.apache.commons.logging</whiteList>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
+
+
+</project>

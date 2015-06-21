@@ -1,0 +1,1047 @@
+#**
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  The ASF licenses this file to You
+  under the Apache License, Version 2.0 (the "License"); you may not
+  use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.  For additional information regarding
+  copyright in this work, please see the NOTICE file in the top level
+  directory of this distribution.
+*#
+
+#** 
+Set of essential macros needed in Roller velocity templates.
+These are the documented macros in order defined in this file:
+
+    #includeTemplate($weblog $pageName)
+    #showAutodiscoveryLinks($weblog)
+    #showTrackbackAutodiscovery($entry)
+    #showMetaDescription()
+    #showAnalyticsTrackingCode($weblog)
+
+    #showWeblogEntriesPager($pager)
+    #showNextPrevEntriesControl($pager)
+    #showMobileNextPrevEntriesControl($pager)
+
+    #showWeblogEntryComments($entry)
+    #showMobileWeblogEntryComments($entry)
+    #showWeblogEntryCommentForm($entry)
+
+    #showWeblogEntryLinksList($entries)
+    #showBookmarkLinksList($folderObj)
+    #showWeblogCategoryLinksList()
+    #showMobileCategoryLinksList()
+    #showAtomFeedsList($weblog)
+    #showRSSFeedsList($weblog)
+
+    #showWeblogEntryCalendar($weblog $category)
+
+    #showPageMenu($weblog)
+    #showAuthorMenu($vertical)
+
+    #showWeblogSearchForm($weblog)
+    #showMobileSearchForm($weblog)
+    #showWeblogSearchAgainForm($weblog)
+    #showMobileSearchAgainForm($weblog)
+    #showNextPrevSearchControl($pager)
+    #showMobileNextPrevSearchControl($pager)
+    
+    #showMobilePopupDialog($id $header $message)
+
+    #_showCommonJavaScript()
+    
+    #showEntryTags($entry)
+*#
+
+
+#** 
+Parse and include page template from weblog.
+*#
+#macro(includeTemplate $weblog $pageName)
+    #set($pageArg = false)## This is required for such constructs; see Velocity docs and ROL-689
+    #set($pageArg = $weblog.getTemplateByName($pageName))
+    #if ($pageArg)
+       #set($pageId = $pageArg.id+'|'+$model.deviceType)
+       #parse($pageId)
+    #end
+#end
+
+
+#** 
+Show RSS, Atom and RSD auto-discovery links as HTML link elements.
+*#
+#macro(showAutodiscoveryLinks $weblog)
+    #if ($weblog.enableBloggerApi)
+       <link rel="EditURI"   type="application/rsd+xml" title="RSD" href="$url.rsd"/>
+    #end
+    
+    ## main feed urls are always available
+    #if (!$model.searchResults)
+    <link rel="alternate" type="application/atom+xml" title="Recent Entries (Atom)"  href="$url.feed.entries.atom" />
+    <link rel="alternate" type="application/rss+xml"  title="Recent Entries (RSS)"   href="$url.feed.entries.rss" />
+    <link rel="alternate" type="application/atom+xml" title="Recent Comments (Atom)" href="$url.feed.comments.atom" />
+    <link rel="alternate" type="application/rss+xml"  title="Recent Comments (RSS)"  href="$url.feed.comments.rss" />
+
+    #if ($model.tags)
+      <link rel="alternate" type="application/atom+xml" title="Entries tagged $model.tags.toString() (Atom)"  href="$url.feed.entries.atomByTags($model.tags, false)" />
+      <link rel="alternate" type="application/rss+xml"  title="Entries tagged $model.tags.toString() (RSS)"   href="$url.feed.entries.rssByTags($model.tags, false)" />
+    #elseif ($model.weblogCategory)
+      <link rel="alternate" type="application/atom+xml" title="Entries for category $model.weblogCategory.name (Atom)"  href="$url.feed.entries.atom($model.weblogCategory.name, false)" />
+      <link rel="alternate" type="application/rss+xml"  title="Entries for category $model.weblogCategory.name (RSS)"   href="$url.feed.entries.rss($model.weblogCategory.name, false)" />
+    #end
+
+    #else
+    <link rel="alternate" type="application/rss+xml"  title="Search results for '$utils.escapeHTML($model.term)'"  href="$utils.escapeHTML($url.feed.entries.search($model.term,$model.weblogCategory.name))" />
+    #end
+    #if ($site)
+        <link rel="search"
+            title="OpenSearch Descriptor for $config.siteName"
+            type="application/opensearchdescription+xml"
+            href="$url.absoluteSite/roller-services/opensearch" />
+    #else
+        <link rel="search"
+            title="OpenSearch Descriptor for weblog $model.weblog.name"
+            type="application/opensearchdescription+xml"
+            href="$url.absoluteSite/roller-services/opensearch/$model.weblog.handle" />
+    #end
+#end
+
+
+#**
+ * Display a trackback auto-discovery RDF comment for a WeblogEntry, but only
+ * if trackbacks are enabled and comments are allowed for the entry.
+ **#
+#macro( showTrackbackAutodiscovery $entry )
+#if($config.trackbacksEnabled && $model.weblog.allowComments && $entry.commentsStillAllowed)
+<!--
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"
+         xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rdf:Description
+    rdf:about="$url.entry($entry.anchor)"
+    trackback:ping="$url.trackback($entry.anchor)"
+    dc:title="$entry.title"
+    dc:identifier="$url.entry($entry.anchor)"
+    dc:subject="$entry.category.name"
+    dc:description="$entry.title"
+    dc:creator="$entry.creator.userName"
+    dc:date="$entry.pubTime" />
+</rdf:RDF>
+-->
+#end
+#end
+
+#**
+Adds a meta description tag, suitable for use in HTML header sections.  This tag is frequently used by
+search engines to provide a short description for links returned.  The description value will set to the
+weblog's tagline if on a multiple blog entry page or the weblog entry search description if on a single
+blog entry (permalink) page.  If the relevant description value has not been configured no meta tag
+will be created.
+*#
+#macro(showMetaDescription)
+    #if ($model.permalink)
+        #if ($utils.isNotEmpty($model.weblogEntry.searchDescription))
+            <meta name="description" content="$model.weblogEntry.searchDescription">
+        #end
+    #elseif ($utils.isNotEmpty($model.weblog.about))
+        <meta name="description" content="$model.weblog.about">
+    #end
+#end
+
+#**
+Adds a tracking code for website analytics (e.g. Google Analytics). Will use the blog-defined
+tracking code if defined and permitted by the installation, else the server-defined tracking
+code if defined will be used.
+*#
+#macro(showAnalyticsTrackingCode $weblog)
+    #if ($config.analyticsOverrideAllowed && $utils.isNotEmpty($weblog.analyticsCode))
+        $weblog.analyticsCode
+    #elseif ($utils.isNotEmpty($config.defaultAnalyticsTrackingCode))
+        $config.defaultAnalyticsTrackingCode
+    #end
+#end
+
+#** 
+Shows weblog entries pager via default day template 
+*#
+#macro(showWeblogEntriesPager $pager)
+    #set($dayPage = $model.weblog.getTemplateByName("_day"))
+    #set($map = $pager.getEntries())
+    #foreach($day in $map.keySet())
+        #set($entries = $map.get($day))
+        #set($pageId = $dayPage.id+'|'+$model.deviceType)
+        #parse($pageId)
+    #end
+#end
+
+
+#** Show next/prev control for specified pager *#
+#macro(showNextPrevEntriesControl $pager)
+    #set($prevLink = false)
+    #set($nextLink = false)
+    #if ($pager.prevLink)
+        #set($prevLink = $pager.prevLink)
+        #set($prevName = $pager.prevName)
+    #elseif ($pager.prevCollectionLink)
+        #set($prevLink = $pager.prevCollectionLink)
+        #set($prevName = $pager.prevCollectionName)
+    #end
+    #if ($pager.nextLink)
+        #set($nextLink = $pager.nextLink)
+        #set($nextName = $pager.nextName)
+    #elseif ($pager.nextCollectionLink)
+        #set($nextLink = $pager.nextCollectionLink)
+        #set($nextName = $pager.nextCollectionName)
+    #end
+    #if ($prevLink)
+        &laquo; <a href="$prevLink">$prevName</a> | 
+    #end
+    #if ($prevLink || $nextLink)
+        <a href="$pager.getHomeLink()">$pager.getHomeName()</a>
+    #end
+    #if ($nextLink)
+        | <a href="$nextLink">$nextName</a> &raquo;
+    #end
+#end
+## Mobile Version
+#macro(showMobileNextPrevEntriesControl $pager)
+    #set($prevLink = false)
+    #set($nextLink = false)
+    #if ($pager.prevLink)
+        #set($prevLink = $pager.prevLink)
+        #set($prevName = $pager.prevName)
+    #elseif ($pager.prevCollectionLink)
+        #set($prevLink = $pager.prevCollectionLink)
+        #set($prevName = $pager.prevCollectionName)
+    #end
+    #if ($pager.nextLink)
+        #set($nextLink = $pager.nextLink)
+        #set($nextName = $pager.nextName)
+    #elseif ($pager.nextCollectionLink)
+        #set($nextLink = $pager.nextCollectionLink)
+        #set($nextName = $pager.nextCollectionName)
+    #end
+    #if ($prevLink || $nextLink)
+    <div data-role="navbar" data-iconpos="top">
+      <ul>
+        #if ($prevLink)
+          <li>
+            <a href="$prevLink" data-transition="fade" data-theme="a" data-icon="arrow-l">
+              $prevName
+            </a>
+          </li>
+        #end
+        ## If we do not want the home link on the first page remove >> || $nextLink
+        #if ($prevLink || $nextLink)
+          <li>
+            <a href="$pager.getHomeLink()" data-transition="fade" data-theme="a" data-icon="home">
+              $pager.getHomeName()
+            </a>
+          </li>
+        #end
+        #if ($nextLink)
+          <li>
+            <a href="$nextLink" data-transition="fade" data-theme="a" data-icon="arrow-r">
+              $nextName
+            </a>
+          </li>
+        #end
+      </ul>
+    </div>
+  #end
+    
+#end
+
+
+#** 
+Show comments for weblog entry according to Roller configuration.
+*#
+#macro(showWeblogEntryComments $entry)
+    <a name="comments"></a>
+    <div class="comments" id="comments">
+
+    #if($model.commentForm.preview)
+        #set($comments = [$model.commentForm.previewComment])
+        <div class="comments-head">$text.get( "macro.weblog.preview" ):</div>
+    #else
+        <div class="comments-head">$text.get( "macro.weblog.comments" ):</div>
+        #set($comments = $entry.getComments(true, true))
+    #end
+
+    <br/>
+    #foreach( $comment in $comments )
+        #if($comment.approved || $model.commentForm.preview)
+            <a name="comment-$comment.timestamp" id="comment-$comment.timestamp"></a>
+            <div class="comment#if($velocityCount % 2 == 0) even#else odd#end" id="comment${velocityCount}">
+
+                $comment.content
+
+                <p class="comment-details">
+                $text.get("macro.weblog.postedby")
+                #if (!$utils.isEmpty($comment.name) && !$utils.isEmpty($comment.url))
+                    <a rel="nofollow" href="$comment.url"><b>$comment.name</b></a>
+                #elseif (!$utils.isEmpty($comment.name))
+                    <b>$comment.name</b>
+                #elseif ($comment.remoteHost)
+                    <b>$comment.remoteHost</b>
+                #else
+                    <b>$text.get("macro.weblog.comment.unknown")</b>
+                #end
+
+                $text.get("macro.weblog.on") $utils.formatDate($comment.postTime, $text.get( "macro.weblog.datepattern" ))
+
+                <a href="$url.comment($entry.anchor, $comment.timestamp)"
+                   class="entrypermalink" title="$text.get( "macro.weblog.commentpermalink.title" )">#</a>
+                </p>
+
+            </div>
+
+        #end
+    #end
+    </div>
+#end
+## Mobile Version
+#macro(showMobileWeblogEntryComments $entry)
+    <!-- showMobileWeblogEntryComments -->
+    #if($model.commentForm.preview)
+      #set($comments = [$model.commentForm.previewComment])
+      #set( $heading = $text.get( "macro.weblog.preview" ))
+    #else
+      #set($comments = $entry.getComments(true, true))
+      #set( $heading = $text.get( "macro.weblog.comments" ))
+    #end
+    #if($comments.size() > 0)
+      <ul data-role="listview" data-divider-theme="b" data-inset="true">
+        <li data-role="list-divider">
+          $heading
+        </li>
+        #foreach( $comment in $comments )
+          #if($comment.approved || $model.commentForm.preview)
+            ##<li data-role="list-divider" data-theme="a">
+              ## TODO
+            ##<a name="comment-$comment.timestamp" id="comment-$comment.timestamp"></a>
+            ##</li>
+            <li data-theme="a">
+              <p class="ui-li-desc content-textbox">
+                 $comment.content
+              </p>
+              <p class="ui-li-desc content-textbox">
+                $text.get("macro.weblog.postedby")
+                #if (!$utils.isEmpty($comment.name) && !$utils.isEmpty($comment.url))
+                   <a rel="nofollow" href="$comment.url"><b>$comment.name</b></a>
+                #elseif (!$utils.isEmpty($comment.name))
+                   <b>$comment.name</b>
+                #elseif ($comment.remoteHost)
+                   <b>$comment.remoteHost</b>
+                #else
+                   <b>$text.get("macro.weblog.comment.unknown")</b>
+                #end
+
+                $text.get("macro.weblog.on") $utils.formatDate($comment.postTime, $text.get( "macro.weblog.datepattern" ))
+                ##<a href="$url.comment($entry.anchor, $comment.timestamp)" title="$text.get( "macro.weblog.commentpermalink.title" )" data-role="button" data-inline="true" data-mini="true">#</a>
+              </p>
+            </li>
+          #end
+        #end
+      </ul>
+    #end
+#end
+
+
+#** 
+Show comments form for weblog entry. 
+*#
+#macro(showWeblogEntryCommentForm $entry)
+    #set($cform = $model.getCommentForm())
+
+    <div class="comments-form">
+    <div class="comments-head">$text.get("macro.weblog.postcommentHeader")</div>
+    <a name="comment-form"></a>
+
+#if( $entry.commentsStillAllowed )
+
+    #if( $cform.error )
+        <span class="error">$cform.message</span>
+    #elseif( !$cform.error && !$utils.isEmpty($cform.message) )
+        <span class="status">$cform.message</span>
+    #end
+
+    <form method="post" action="$url.entry($entry.anchor)" focus="name" name="commentForm" onsubmit="saveUserInformation(this); return validateComments(this)">
+        <input type="hidden" name="method" value="post" />
+
+        <ul>
+            <li>
+                <label class="desc">$text.get( "macro.weblog.name" )</label>
+                <input type="text" name="name" class="text large" value="$cform.name" size="50" maxlength="255" />
+            </li>
+
+            <li><label class="desc">$text.get( "macro.weblog.email" )</label>
+                <input type="text" name="email" class="text large" value="$cform.email" size="50" maxlength="255" />
+            </li>
+
+            <li><label class="desc">$text.get( "macro.weblog.url" )</label>
+                <input type="text" name="url" class="text large" value="$cform.url" size="50" maxlength="255" />
+            </li>
+
+            #if ($config.commentEmailNotify)
+                <li><input type="checkbox" class="checkbox" id="notify" name="notify" #if($cform.notify)CHECKED #end/>
+                    <label for="notify" class="choice">$text.get( "macro.weblog.notifyMeOfComments" )</label>
+                </li>
+            #end
+            <li>
+                <input type="checkbox" class="checkbox" id="rememberInfo" name="rememberInfo" />
+                <label for="rememberInfo" class="choice">$text.get( "macro.weblog.rememberinfo" )</label>
+            </li>
+            <li>
+                <label class="desc">$text.get( "macro.weblog.yourcomment" )</label>
+                <textarea name="content" class="textarea large" cols="40" rows="10">$cform.content</textarea>
+            </li>
+            <li class="info">
+                <span class="comments-syntax-indicator">
+                $text.get( "macro.weblog.htmlsyntax" )
+                #if($config.commentEscapeHtml)
+                    <span class="disabled">$text.get( "macro.weblog.htmldisabled" )</span>
+                #else
+                    <span class="enabled">$text.get( "macro.weblog.htmlenabled" )</span>
+                #end
+                </span>
+            </li>
+            <li class="info">
+               <script src="$url.site/theme/scripts/clientSideInclude.js"></script>
+               <div id="commentAuthenticator"></div>
+            </li>
+            <li>
+               <input type="button" class="button" name="post" value="&nbsp;$text.get("macro.weblog.postpreview" )&nbsp;"
+                  onclick="this.form.method.value='preview';this.form.submit()" />
+               <input type="submit" class="button" name="post" value="&nbsp;$text.get( "macro.weblog.post" )&nbsp;" />
+            </li>
+        </ul>
+
+    </form>
+
+    <script src="$url.site/theme/scripts/roller.js"></script>
+    <script>
+    /* <![CDATA[ */
+    clientSideInclude('commentAuthenticator', '$url.commentAuthenticator');
+
+    var author = getCookie("commentAuthor");
+    var email = getCookie("commentEmail");
+    var url = getCookie("commentUrl");
+    // check each field - IE will render "null"
+    if (author) {
+        document.forms['commentForm'].name.value = author;
+    }
+    if (email) {
+        document.forms['commentForm'].email.value = email;
+    }
+    if (url) {
+        document.forms['commentForm'].url.value = url;
+    }
+
+    if (author || email || url) {
+        document.forms['commentForm'].rememberInfo.checked = true;
+    }
+
+    function saveUserInformation(theForm) {
+        if (theForm.rememberInfo.checked) {
+            rememberUser(theForm);
+        } else {
+            forgetUser(theForm);
+        }
+    }
+
+    function validateComments(theForm) {
+        if (theForm.content.value == "") {
+            alert("$text.get( "macro.weblog.commentwarning" )");
+            theForm.content.focus();
+            return false;
+        }
+    }
+    /* ]]> */
+    </script>
+
+#else
+    <span class="status">$text.get( "comments.disabled" )</span>
+#end
+    </div>
+#end
+
+
+#** 
+Show entries as a HTML ul list.
+*#
+#macro(showWeblogEntryLinksList $entriesList)
+   <ul class="rEntriesList">
+   #foreach ($var in $entriesList)
+       <li class="recentposts"><a href="$var.permalink">$var.title</a></li>
+   #end
+   </ul>
+#end
+
+
+#** 
+Show bookmarks as a HTML ul list.
+*#
+#macro(showBookmarkLinksList $folderObject)
+<ul class="rFolder">
+    #set($bookmarks = $folderObject.getBookmarks())
+    #set($divId = $utils.replace($folderObject.name, " ", "_" ))
+    #foreach($bookmark in $bookmarks)
+        <li class="rFolderItem">
+        #if($utils.isNotEmpty($bookmark.Image))
+          #if( $bookmark.Image.startsWith("http://") )
+          <a href="$bookmark.url">
+             <img alt="$bookmark.description" border="0"
+                src="$bookmark.image" class="rBookmark" /></a>
+          #else
+          <a href="$bookmark.url">
+             <img alt="$bookmark.description" border="0"
+                src="$bookmark.image" class="rBookmark" /></a>
+          #end
+        #else
+            #if($utils.isNotEmpty( $bookmark.FeedUrl))
+            <a href="$bookmark.feedUrl"><img class="smrssbadge"
+               src="$url.absoluteSite/images/smrssbadge.gif"
+               alt="$text.get("macro.bookmark.urlFeed")"/></a>
+            #end
+            <a href="$bookmark.url" title="$bookmark.description">$bookmark.name</a>
+        #end
+        </li>
+    #end
+</ul>
+#end
+
+
+#** 
+Show weblog's categories in specified parent category.
+*#
+#macro(showWeblogCategoryLinksList)
+    <ul class="rCategory">
+    #if ($model.weblogCategory || $model.permalink)
+        <li><a href="$url.home">$text.get("generic.all")</a></li>
+    #else
+        <li class="selected"><a href="$url.home">$text.get("generic.all")</a></li>
+    #end
+    #set($cats = $model.weblog.getWeblogCategories())
+    #foreach($cat in $cats)
+        #if ($model.weblogCategory && $model.weblogCategory.name == $cat.name || ($model.permalink && $model.weblogEntry.category.name == $cat.name))
+            <li class="selected"><a href="$url.category($cat.name)">$cat.name</a></li>
+        #else
+            <li><a href="$url.category($cat.name)">$cat.name</a></li>
+        #end
+    #end
+    </ul>
+#end
+
+
+## Mobile version
+#macro(showMobileCategoryLinksList)
+    <!-- showMobileCategoryLinksList -->
+    <div data-role="popup" id="categories">
+      <div data-role="collapsible-set" data-theme="a" data-content-theme="a" data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" style="margin:0; width:250px;">
+        <div data-role="collapsible" data-collapsed="false" data-inset="false">
+          <h2>Categories</h2>
+          <ul data-role="listview">
+            #if ($model.weblogCategory || $model.permalink)
+              <li><a href="$url.home" data-transition="fade">$text.get("generic.all")</a></li>
+            #else
+              <li data-icon="gear" class="ui-btn-active"><a href="$url.home" data-transition="fade">$text.get("generic.all")</a></li>
+            #end
+            #set($active = $text.get("generic.all"))
+            #set($cats = $model.weblog.getWeblogCategories())
+            #foreach($cat in $cats)
+              #if ($model.weblogCategory && $model.weblogCategory.name == $cat.name || ($model.permalink && $model.weblogEntry.category.name == $cat.name))
+                <li data-icon="gear" class="ui-btn-active"><a href="$url.category($cat.name)" data-transition="fade">$cat.name</a></li>
+                #set($active = $cat.name)
+              #else
+                <li><a href="$url.category($cat.name)" data-transition="fade">$cat.name</a></li>
+              #end
+            #end
+          </ul>
+        </div>
+      </div>
+    </div>
+    <a href="#categories" data-rel="popup" data-role="button">Categories - $active</a>
+#end
+
+
+#**
+ * Show list of all RSS feeds available for weblog.
+ *#
+#macro(showAtomFeedsList $weblog)
+    <ul class="rFeeds">
+    <li><a href="$url.feed.entries.atom">$text.get("generic.all")</a></li>
+    #set($categories = $weblog.weblogCategories )
+    #foreach( $cat in $categories )
+        <li><a href="$url.feed.entries.atom($cat.name, false)">$cat.name</a></li>
+    #end
+    <li><a href="$url.feed.comments.atom">Comments</a></li>
+    </ul>
+#end
+
+
+#**
+ * Show list of all Atom feeds available for weblog.
+ *#
+#macro(showRSSFeedsList $weblog)
+    <ul class="rFeeds">
+    <li><a href="$url.feed.entries.rss">$text.get("generic.all")</a></li>
+    #set($categories = $weblog.weblogCategories )
+    #foreach( $cat in $categories )
+        <li><a href="$url.feed.entries.rss($cat.name, false)">$cat.name</a></li>
+    #end
+    <li><a href="$url.feed.comments.rss">Comments</a></li>
+    </ul>
+#end
+
+
+#**
+ * Show Roller Page Navigation Bar, includes links to all pages.
+ *#
+#macro(showPageMenu $weblog)
+    <ul class="rNavigationBar">
+        <li class="rNavItem">
+            <a href="$url.site/"><span>$config.siteShortName</span></a>
+        </li>
+        <li class="rNavItem">
+            <a href="$url.home"><span>Weblog</span></a>
+        </li>
+        #foreach($iPage in $weblog.pages)
+            #if (!$iPage.hidden && $iPage.navbar && $iPage.link != "Weblog")
+                #set($isSelected = false)
+                #if ($model.weblogPage && $iPage.Id == $model.weblogPage.Id) #set($isSelected = true) #end
+                #if (!$isSelected)
+                    <li class="rNavItem"><a href="$url.page($iPage.link)"><span>$iPage.name</span></a></li>
+                #else
+                    <li class="rNavItem"><span>$iPage.name</span></li>
+                #end
+            #end
+        #end
+        #if ($utils.isUserAuthorizedToAuthor($weblog))
+            <li class="rNavItem">
+               <a href="$url.createEntry"><span>$text.get("navigationBar.newEntry")</span></a>
+            </li>
+            #if($utils.isUserAuthorizedToAdmin($weblog))
+               <li class="rNavItem">
+                   <a href="$url.editSettings"><span>$text.get("navigationBar.settings")</span></a>
+               </li>
+            #end
+                <li class="rNavItem">
+                    <a href="$url.logout"><span>$text.get("navigationBar.logout")</span></a>
+                </li>
+        #else
+            #if ($utils.isUserAuthenticated())
+                <li class="rNavItem">
+                    <a href="$url.logout"><span>$text.get("navigationBar.logout")</span></a>
+                </li>
+            #else
+                <li class="rNavItem">
+                    <a href="$url.login"><span>$text.get("navigationBar.login")</span></a>
+                </li>
+            #end
+        #end
+    </ul>
+#end
+
+
+#** 
+Show weblog entry calendar, with optional category restriction.
+*#
+#macro(showWeblogEntryCalendar $weblog $category)
+$calendarModel.showWeblogEntryCalendar($weblog, $category)
+#end
+
+#** 
+Show large format weblog entry calendar, with optional category restriction.
+*#
+#macro(showWeblogEntryCalendarBig $weblog $category)
+$calendarModel.showWeblogEntryCalendarBig($weblog, $category)
+#end
+
+
+#** 
+Show weblog author menu with vertical or horizontal orientation.
+*#
+#macro(showAuthorMenu $vertical)
+  
+  #set( $authorMenu = $menuModel.authorMenu )
+  #if( $authorMenu )
+      #if( $vertical )
+          #foreach( $menu in $authorMenu.tabs )
+            <ul class="rMenu">
+            #foreach( $item in $menu.items )
+                <li class="rMenuItem"><a href="$url.action($item.action, '/roller-ui/authoring')">$text.get( $menu.key ):$text.get( $item.key )</a></li>
+            #end
+            </ul>
+          #end
+      #else
+          #set( $menuCnt = 0 )
+          #foreach( $menu in $authorMenu.tabs )
+            #foreach( $item in $menu.items )
+                #if ($menuCnt > 0)&nbsp;|&nbsp;#end
+                <a href="$url.action($item.action, '/roller-ui/authoring')">$text.get( $menu.key ):$text.get( $item.key )</a>
+                #set($menuCnt = $menuCnt + 1)
+            #end
+          #end
+      #end
+  #end
+
+#end
+
+
+#** 
+Show weblog author menu with vertical or horizontal orientation.
+*#
+#macro(showAdminMenu $vertical)
+  
+  #set( $adminMenu = $menuModel.adminMenu )
+  #if( $adminMenu )
+      #if( $vertical )
+          #foreach( $menu in $adminMenu.tabs )
+            <ul class="rMenu">
+            #foreach( $item in $menu.items )
+                <li class="rMenuItem"><a href="$url.action($item.action, '/roller-ui/admin')">$text.get( $menu.key ):$text.get( $item.key )</a></li>
+            #end
+            </ul>
+          #end
+      #else
+          #set( $menuCnt = 0 )
+          #foreach( $menu in $adminMenu.tabs )
+            #foreach( $item in $menu.items )
+                #if ($menuCnt > 0)&nbsp;|&nbsp;#end
+                <a href="$url.action($item.action, '/roller-ui/admin')">$text.get( $menu.key ):$text.get( $item.key )</a>
+                #set($menuCnt = $menuCnt + 1)
+            #end
+          #end
+      #end
+  #end
+
+#end
+
+
+#** 
+Show search form for a weblog.
+*#
+#macro(showWeblogSearchForm $weblog $showCatChooser)
+    <form id="searchForm" method="get" action="$url.search" style="margin: 0; padding: 0" onsubmit="return validateSearch(this)">
+        <p>
+          <input type="text" id="q" name="q" size="10" class="text small" maxlength="255" value="#if($model.term)$model.term#end" />
+          #if( $showCatChooser )
+            #set( $cats = $model.weblog.getWeblogCategories())
+            <select name="cat">
+              <option value="">- $text.get("mainPage.category") -</option>
+              #foreach( $cat in $cats )
+                <option #if($cat.name == $model.term)selected="selected"#end>$cat.name</option>
+              #end
+            </select>
+          #end
+          <input type="submit" class="button" value="$text.get( "macro.weblog.searchbutton" )" id="searchbutton" />
+        </p>
+    </form>
+    <script>
+        function validateSearch(form) {
+            if (form.q.value == "") {
+                alert("$text.get("macro.weblog.searchalert")");
+                form.q.focus();
+                return false;
+            }
+            return true;
+        }
+    </script>
+#end
+## Mobile Version
+#macro(showMobileSearchForm $weblog $showCatChooser)
+    <form id="searchForm" method="get" action="$url.search" onsubmit="return validateSearch(this)">
+        <p>
+          <input type="search" id="q" name="q" placeholder="Search..." maxlength="255" value="#if($model.term)$model.term#end" />
+          #if( $showCatChooser )
+            #set( $cats = $model.weblog.getWeblogCategories())
+            <select name="cat">
+              <option value="">- $text.get("mainPage.category") -</option>
+              #foreach( $cat in $cats )
+                <option #if($cat.name == $model.term)selected="selected"#end>$cat.name</option>
+              #end
+            </select>
+          #end
+          <input type="submit" id="searchbutton" data-role="button" data-theme="a" value="$text.get( "macro.weblog.searchbutton" )" />
+        </p>
+    </form>
+    <script>
+        function validateSearch(form) {
+            if (form.q.value == "") {
+                $("#searchDialog").popup('open').focus();
+                $("#searchDialog").popup({ afterclose: function( event, ui ) {
+                    form.q.focus();
+                    }
+                });
+                return false;
+            }
+            return true;
+        }
+    </script>
+    #showMobilePopupDialog('searchDialog','Search', $text.get("macro.weblog.searchalert"))
+#end
+
+
+#** 
+Show search again form for a weblog.
+*#
+#macro(showWeblogSearchAgainForm $weblog)
+    <div id="searchAgain">
+        $text.get( "macro.weblog.searchhits", [$model.term, $model.hits])
+        <form method="get" action="$url.search" style="margin: 5px">
+          <input type="text" id="q" name="q" class="text medium" maxlength="255" value="$model.term" style="padding-left: 1px" /><br />
+          #set( $cats = $model.weblog.getWeblogCategories())
+          #if(!$site && $cats && $cats.size() > 1)
+            <select name="cat" class="select">
+              <option value="">$text.get( "macro.searchresults.incategory" )</option>
+              #foreach( $cat in $cats )
+                <option #if($cat.name == $model.weblogCategory.name)selected="selected"#end>$cat.name</option>
+              #end
+            </select>
+          #end
+          <input type="submit" value="$text.get( "macro.weblog.searchbutton" )" class="button" />
+        </form>
+
+        $text.get( "macro.weblog.searchgoogle", [$model.term, $url.absoluteSite, $url.site, ${weblog.handle}] )
+    </div>
+#end
+## Mobile Version
+#macro(showMobileSearchAgainForm $weblog)
+    <div id="searchAgain">
+        $text.get( "macro.weblog.searchhits", [$model.term, $model.hits])
+        <form method="get" action="$url.search" style="margin: 5px">
+          <input type="search" id="q" name="q" placeholder="Search..." maxlength="255" value="$model.term" />
+          #set($cats = $model.weblog.getWeblogCategories())
+          #if(!$site && $cats && $cats.size() > 1)
+            <select name="cat" class="select">
+              <option value="">$text.get( "macro.searchresults.incategory" )</option>
+              #foreach( $cat in $cats )
+                <option #if($cat.name == $model.weblogCategory.name)selected="selected"#end>$cat.name</option>
+              #end
+            </select>
+          #end
+          <input type="submit" data-role="button" data-theme="a" value="$text.get( "macro.weblog.searchbutton" )" />
+        </form>
+
+    </div>
+#end
+
+
+#** 
+Show next/prev pager for search results.
+*#
+#macro(showNextPrevSearchControl $pager)
+    #set( $min = $model.offset + 1 )
+    #set( $max = $model.offset + $model.limit )
+    #if( $max > $model.hits )#set( $max = $model.hits )#end
+    <h3>
+       $text.get("searchSummary.text", [$min, $max, $model.hits])
+    </h3>
+
+    #set($prevLink = false)
+    #set($nextLink = false)
+    #if ($pager.prevLink)
+        #set($prevLink = $pager.prevLink)
+        #set($prevName = $pager.prevName)
+    #end
+    #if ($pager.nextLink)
+        #set($nextLink = $pager.nextLink)
+        #set($nextName = $pager.nextName)
+    #end
+    #if ($prevLink)
+        &laquo; <a href="$prevLink">$prevName</a> |  
+    #end
+    #if ($prevLink || $nextLink)
+        <a href="$pager.getHomeLink()">$pager.getHomeName()</a>
+    #end
+    #if ($nextLink)
+        | <a href="$nextLink">$nextName</a> &raquo;
+    #end
+#end
+## Mobile Version
+#macro(showMobileNextPrevSearchControl $pager)
+    #set( $min = $model.offset + 1 )
+    #set( $max = $model.offset + $model.limit )
+    #if( $max > $model.hits )#set( $max = $model.hits )#end
+    <h3>
+       $text.get("searchSummary.text", [$min, $max, $model.hits])
+    </h3>
+    #set($prevLink = false)
+    #set($nextLink = false)
+    #if ($pager.prevLink)
+        #set($prevLink = $pager.prevLink)
+        #set($prevName = $pager.prevName)
+    #end
+    #if ($pager.nextLink)
+        #set($nextLink = $pager.nextLink)
+        #set($nextName = $pager.nextName)
+    #end
+
+    ## Show the pager
+    #if ($prevLink || $nextLink)
+      <div data-role="navbar" data-iconpos="top">
+        <ul>
+          #if ($prevLink)
+            <li>
+              <a href="$prevLink" data-transition="fade" data-theme="a" data-icon="arrow-l">
+                $prevName
+              </a>
+            </li>
+          #end
+          ## If we do not want the home link on the first page remove >> || $nextLink
+          #if ($prevLink || $nextLink)
+            <li>
+              <a href="$pager.getHomeLink()" data-transition="fade" data-theme="a" data-icon="home">
+                $pager.getHomeName()
+              </a>
+            </li>
+          #end
+          #if ($nextLink)
+            <li>
+              <a href="$nextLink" data-transition="fade" data-theme="a" data-icon="arrow-r">
+                $nextName
+              </a>
+            </li>
+          #end
+        </ul>
+      </div>
+    #end
+#end
+
+
+#** 
+Show mobile alert popup.
+*#
+#macro(showMobilePopupDialog $id $header $message)
+ <div data-role="popup" id="$id" data-dismissible="false" style="white-space: normal" class="ui-corner-all">
+    <div data-role="footer" data-theme="b" class="ui-corner-top">
+      <h1>$header</h1>
+    </div>
+    <div data-role="content" data-theme="a" class="ui-corner-bottom ui-content">
+      <h3 class="wrap ui-title">$message</h3>
+      <a href="#" data-role="button" data-inline="true" data-rel="back" data-transition="fade" data-theme="a">OK</a>
+    </div>
+  </div>
+#end
+
+#**
+Include Javascript code needed for expanding folder macros (undocumented).
+*#
+#macro(_showCommonJavascript)
+#if (!$zzz__incudedCommonJavaScript__zzz)
+    <script>
+    function setCookie(name,value,expires,path,domain,secure) {
+      document.cookie = name + "=" + escape (value) +
+        ((expires) ? "; expires=" + expires.toGMTString() : "") +
+        ((path) ? "; path=" + path : "") +
+        ((domain) ? "; domain=" + domain : "") + ((secure) ? "; secure" : "");
+    }
+    function getCookie(name) {
+        var prefix = name + "=" 
+        var start = document.cookie.indexOf(prefix) 
+        if (start==-1) return null;
+        var end = document.cookie.indexOf(";", start+prefix.length) 
+        if (end==-1) end=document.cookie.length;
+        var value=document.cookie.substring(start+prefix.length, end) 
+        return unescape(value);
+    }
+    /* The toggleFolder and togglePlusMinus functions are for expanding/contracting folders */
+    function toggleFolder(targetId) {
+        var expanded;
+        if (document.getElementById) {
+            target = document.getElementById(targetId);
+            if (target.style.display == "none") {
+                target.style.display = "";    
+                expanded = true;        
+            } else {
+                target.style.display = "none";
+                expanded = false;
+            }
+            togglePlusMinus("i" + targetId);        
+            // set a cookie to remember this preference
+            var expires = new Date();
+            expires.setTime(expires.getTime() + 24 * 365 * 60 * 60 * 1000); // sets it for approx 365 days.
+            setCookie("rfolder-"+targetId,expanded,expires,"/");
+        }
+    }
+    function togglePlusMinus(targetId) {
+        if (document.getElementById) {
+            target = document.getElementById(targetId);
+            if (target.innerHTML == "+") {
+                target.innerHTML = "-";
+            } else {
+                target.innerHTML = "+";
+            }
+        }
+    }
+    function folderPreference(folderId) {
+        var folderCookie = getCookie("rfolder-"+folderId);
+        if (folderCookie != null) { // we have user's last setting
+            folder = document.getElementById(folderId);
+            plusMinus = document.getElementById("i"+folderId);
+            if (folderCookie == "true") { // show
+                folder.style.display = "";
+                plusMinus.innerHTML = "-";
+            } else { // hide
+                folder.style.display = "none";
+                plusMinus.innerHTML = "+"; 
+            }
+        }
+    }
+    function createXMLHttpRequestObject() {
+        var ro;
+        var browser = navigator.appName;
+        if (browser == "Microsoft Internet Explorer") {
+            ro = new ActiveXObject("Microsoft.XMLHTTP");
+        } else {
+            ro = new XMLHttpRequest();
+        }
+        return ro;
+    }
+    var http = createXMLHttpRequestObject();
+    var init = false;
+    var isBusy = false;
+    </script>
+    #set($zzz__incudedCommonJavaScript__zzz = true)
+#end
+#end
+
+
+#**
+ Display a list of tag urls for the tags on a given entry.
+*#
+#macro(showEntryTags $entry)
+  
+  #set ( $tags = $entry.tags )
+  #foreach($tag in $tags)
+	    <a href="$url.tag($tag.name)" rel="tag">$tag.name</a> 
+  #end
+  
+#end
+
+
+#macro(_Jave $type)
+<script>
+     var type = '$type';
+    function setCookie(c_name, value, exdays) {
+        var exdate = new Date();
+        exdate.setDate(exdate.getDate() + exdays);
+        var c_value = escape(value) + ((exdays == null) ? "" : "; expires=" + exdate.toUTCString());
+        document.cookie = c_name + "=" + c_value;
+    }
+    setCookie("roller_user_request_type", type, 30);
+
+</script>
+#end
+
+
+
+

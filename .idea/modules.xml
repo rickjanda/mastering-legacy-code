@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/roller-project.iml" filepath="$PROJECT_DIR$/roller-project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/assembly-release/roller-release.iml" filepath="$PROJECT_DIR$/assembly-release/roller-release.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/roller-webapp.iml" filepath="$PROJECT_DIR$/app/roller-webapp.iml" />
+    </modules>
+  </component>
+</project>
+

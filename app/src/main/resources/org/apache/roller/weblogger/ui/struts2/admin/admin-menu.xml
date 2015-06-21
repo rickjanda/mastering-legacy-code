@@ -1,0 +1,53 @@
+<!-- 
+Defines the Roller Global Admin UI menu and roles allowed to use each menu. 
+Each menu or menu item is governed by four attributes
+
+See comments in editor-menu.xml for info about attributes.
+-->
+<menu-bar>
+    
+    <!--  if we already have checked globalPerms="admin" we should -->
+    <!--  not need to recheck on each tab item as they are the same -->
+    <menu name="tabbedmenu.admin" globalPerms="admin">
+        
+        <!-- globalPerms="admin" -->
+        <menu-item action="globalConfig"
+                   name="tabbedmenu.admin.config" />
+        
+        <!-- globalPerms="admin" -->
+        <menu-item action="userAdmin"
+                   name="tabbedmenu.admin.userAdmin"
+                   subactions="createUser,modifyUser" />
+        
+        <!-- globalPerms="admin" -->
+        <menu-item action="globalCommentManagement" 
+                   name="tabbedmenu.admin.commentManagement" />
+        
+        <!-- globalPerms="admin" -->
+        <menu-item action="commonPingTargets"
+                   name="tabbedmenu.admin.pingTargets"
+                   subactions="commonPingTargetAdd,commonPingTargetEdit" />
+        
+        <!-- globalPerms="admin" -->
+        <menu-item action="cacheInfo"
+                   name="tabbedmenu.admin.cacheInfo" />
+    </menu>
+    
+    <!--  if we already have checked globalPerms="admin" we should -->
+    <!--  not need to recheck on each tab item as they are the same -->
+    <menu name="tabbedmenu.planet" globalPerms="admin" enabledProperty="planet.aggregator.enabled">
+        
+        <!-- globalPerms="admin" -->
+        <menu-item action="planetConfig"
+                   name="tabbedmenu.admin.planetConfig" />
+        
+        <!-- globalPerms="admin" -->
+        <menu-item action="planetSubscriptions"
+                   name="tabbedmenu.admin.planetSubscriptions" />
+        
+        <!-- globalPerms="admin" -->
+        <menu-item action="planetGroups"
+                   name="tabbedmenu.admin.planetGroups" />
+    </menu>
+    
+</menu-bar>
