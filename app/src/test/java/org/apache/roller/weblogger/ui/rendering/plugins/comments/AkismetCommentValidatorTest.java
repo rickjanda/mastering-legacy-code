@@ -45,6 +45,18 @@ public class AkismetCommentValidatorTest {
 
         //assert
         assertEquals(0, retVal);
+
+        assertEquals("blog=http://weblogurl.com&user_ip=null&user_agent=null&referrer=null&" +
+                        "permalink=http://permalink.com&comment_type=comment&comment_author=null&" +
+                        "comment_author_email=null&comment_author_url=null&comment_content=null",
+                outputStream.toString("UTF-8"));
+        assertEquals("comment.validator.akismetMessage : ", messages.toString());
+
+        ArgumentCaptor<URLConnection> urlConnectionCaptor = ArgumentCaptor.forClass(URLConnection.class);
+        verify(validator).getInputStreamFrom(urlConnectionCaptor.capture());
+        assertEquals("http://apiKeyValue.rest.akismet.com/1.1/comment-check", urlConnectionCaptor.getValue().getURL().toString());
+
+        verify(validator).getWeblogURL(weblog);
     }
 
     @Test
@@ -75,6 +87,18 @@ public class AkismetCommentValidatorTest {
 
         //assert
         assertEquals(100, retVal);
+
+        assertEquals("blog=http://weblogurl.com&user_ip=null&user_agent=null&referrer=null&" +
+                        "permalink=http://permalink.com&comment_type=comment&comment_author=null&" +
+                        "comment_author_email=null&comment_author_url=null&comment_content=null",
+                outputStream.toString("UTF-8"));
+        assertEquals("", messages.toString());
+
+        ArgumentCaptor<URLConnection> urlConnectionCaptor = ArgumentCaptor.forClass(URLConnection.class);
+        verify(validator).getInputStreamFrom(urlConnectionCaptor.capture());
+        assertEquals("http://apiKeyValue.rest.akismet.com/1.1/comment-check", urlConnectionCaptor.getValue().getURL().toString());
+
+        verify(validator).getWeblogURL(weblog);
     }
 
     @Test
