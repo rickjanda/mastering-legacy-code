@@ -5,59 +5,42 @@ import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 import org.apache.roller.weblogger.util.RollerMessages;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 
 import java.io.*;
 import java.net.URLConnection;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 @SuppressWarnings("RefusedBequest")
 public class AkismetCommentValidatorTest {
 
     @Test
-    public void validate_blockedComment() throws UnsupportedEncodingException {
+    public void validate_blockedComment() throws IOException {
 
         //arrange
         final Weblog weblog = new Weblog();
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        final AkismetCommentValidator validator = new AkismetCommentValidator("apiKeyValue", null) {
+        final AkismetCommentValidator validator = spy(new AkismetCommentValidator("apiKeyValue", null) );
 
-            @Override
-            String getWeblogURL(Weblog website) {
-                return "http://weblogurl.com";
-            }
+        final ByteArrayInputStream streamWithTrue = new ByteArrayInputStream("true".getBytes());
+        doReturn(streamWithTrue).when(validator).getInputStreamFrom(Matchers.<URLConnection>anyObject());
+        doReturn(outputStream).when(validator).getOutputStreamFrom(Matchers.<URLConnection>anyObject());
+        doReturn("1.0").when(validator).getWebLoggerVersion();
+        doReturn("http://weblogurl.com").when(validator).getWeblogURL(weblog);
 
-            @Override
-            String getWebLoggerVersion() {
-                return "1.0";
-            }
-
-            @Override
-            OutputStream getOutputStreamFrom(URLConnection conn) throws IOException {
-                return outputStream;
-            }
-
-            @Override
-            InputStream getInputStreamFrom(URLConnection conn) throws IOException {
-                return new ByteArrayInputStream(("true").getBytes());
-            }
-        };
         final WeblogEntryComment comment = new WeblogEntryComment();
-        comment.setWeblogEntry(new WeblogEntry() {
-            @Override
-            public String getPermalink() {
-                return "http://permalink.com";
-            }
+        final WeblogEntry weblogEntry = spy(new WeblogEntry());
+        doReturn("http://permalink.com").when(weblogEntry).getPermalink();
+        doReturn(weblog).when(weblogEntry).getWebsite();
+        comment.setWeblogEntry(weblogEntry);
 
-            @Override
-            public Weblog getWebsite() {
-                return weblog;
-            }
-        });
         final RollerMessages messages = new RollerMessages();
 
-        // act
+        //act
         final int retVal = validator.validate(comment, messages);
 
         //assert
@@ -65,103 +48,61 @@ public class AkismetCommentValidatorTest {
     }
 
     @Test
-    public void validate_nonblockedComment() throws UnsupportedEncodingException {
+    public void validate_nonblockedComment() throws IOException {
 
         //arrange
         final Weblog weblog = new Weblog();
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        final AkismetCommentValidator validator = new AkismetCommentValidator("apiKeyValue", null) {
+        final AkismetCommentValidator validator = spy(new AkismetCommentValidator("apiKeyValue", null) );
 
-            @Override
-            String getWeblogURL(Weblog website) {
-                return "http://weblogurl.com";
-            }
+        final ByteArrayInputStream streamWithFalse = new ByteArrayInputStream("false".getBytes());
+        doReturn(streamWithFalse).when(validator).getInputStreamFrom(Matchers.<URLConnection>anyObject());
+        doReturn(outputStream).when(validator).getOutputStreamFrom(Matchers.<URLConnection>anyObject());
+        doReturn("1.0").when(validator).getWebLoggerVersion();
+        doReturn("http://weblogurl.com").when(validator).getWeblogURL(weblog);
 
-            @Override
-            String getWebLoggerVersion() {
-                return "1.0";
-            }
-
-            @Override
-            OutputStream getOutputStreamFrom(URLConnection conn) throws IOException {
-                return outputStream;
-            }
-
-            @Override
-            InputStream getInputStreamFrom(URLConnection conn) throws IOException {
-                return new ByteArrayInputStream(("false").getBytes());
-            }
-        };
         final WeblogEntryComment comment = new WeblogEntryComment();
-        comment.setWeblogEntry(new WeblogEntry() {
-            @Override
-            public String getPermalink() {
-                return "http://permalink.com";
-            }
+        final WeblogEntry weblogEntry = spy(new WeblogEntry());
+        doReturn("http://permalink.com").when(weblogEntry).getPermalink();
+        doReturn(weblog).when(weblogEntry).getWebsite();
+        comment.setWeblogEntry(weblogEntry);
 
-            @Override
-            public Weblog getWebsite() {
-                return weblog;
-            }
-        });
         final RollerMessages messages = new RollerMessages();
 
-        // act
+        //act
         final int retVal = validator.validate(comment, messages);
 
         //assert
         assertEquals(100, retVal);
-     }
+    }
 
     @Test
-    public void validate_exceptionWasThrown() throws UnsupportedEncodingException {
+    public void validate_exceptionWasThrown() throws IOException {
 
         //arrange
         final Weblog weblog = new Weblog();
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-        final AkismetCommentValidator validator = new AkismetCommentValidator("apiKeyValue", null) {
+        final AkismetCommentValidator validator = spy(new AkismetCommentValidator("apiKeyValue", null) );
 
-            @Override
-            String getWeblogURL(Weblog website) {
-                return "http://weblogurl.com";
-            }
+        doThrow(new IOException("simulated")).when(validator).getInputStreamFrom(Matchers.<URLConnection>anyObject());
+        doReturn(outputStream).when(validator).getOutputStreamFrom(Matchers.<URLConnection>anyObject());
+        doReturn("1.0").when(validator).getWebLoggerVersion();
+        doReturn("http://weblogurl.com").when(validator).getWeblogURL(weblog);
 
-            @Override
-            String getWebLoggerVersion() {
-                return "1.0";
-            }
-
-            @Override
-            OutputStream getOutputStreamFrom(URLConnection conn) throws IOException {
-                return outputStream;
-            }
-
-            @Override
-            InputStream getInputStreamFrom(URLConnection conn) throws IOException {
-                throw new IOException("Simulated");
-            }
-        };
         final WeblogEntryComment comment = new WeblogEntryComment();
-        comment.setWeblogEntry(new WeblogEntry() {
-            @Override
-            public String getPermalink() {
-                return "http://permalink.com";
-            }
+        final WeblogEntry weblogEntry = spy(new WeblogEntry());
+        doReturn("http://permalink.com").when(weblogEntry).getPermalink();
+        doReturn(weblog).when(weblogEntry).getWebsite();
+        comment.setWeblogEntry(weblogEntry);
 
-            @Override
-            public Weblog getWebsite() {
-                return weblog;
-            }
-        });
         final RollerMessages messages = new RollerMessages();
 
-        // act
+        //act
         final int retVal = validator.validate(comment, messages);
 
         //assert
         assertEquals(0, retVal);
-     }
-
+    }
 }
