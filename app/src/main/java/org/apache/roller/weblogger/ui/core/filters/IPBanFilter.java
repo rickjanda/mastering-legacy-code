@@ -18,18 +18,14 @@
 
 package org.apache.roller.weblogger.ui.core.filters;
 
-import java.io.IOException;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.util.IPBanList;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 /**
@@ -55,7 +51,7 @@ public class IPBanFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         
         // check if client is allowed
-        if(IPBanList.getInstance().isBanned(request.getRemoteAddr())) {
+        if(isBanned(request.getRemoteAddr())) {
             log.debug("BANNED "+request.getRemoteAddr());
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -63,8 +59,12 @@ public class IPBanFilter implements Filter {
             chain.doFilter(request, response);
         }
     }
-    
-    
+
+    boolean isBanned(String remoteAddr) {
+        return IPBanList.getInstance().isBanned(remoteAddr);
+    }
+
+
     public void destroy() {}
     
 }
