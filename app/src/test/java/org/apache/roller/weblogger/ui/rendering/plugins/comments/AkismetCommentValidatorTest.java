@@ -29,19 +29,19 @@ import static org.junit.Assert.assertEquals;
 @RunWith(JMockit.class)
 public class AkismetCommentValidatorTest {
 
-    @Mocked
-    ResourceBundle unused;
+    @Mocked ResourceBundle resourceBundle;
 
-    @Mocked(stubOutClassInitialization = true)
-    WebloggerConfig webloggerConfig;
+    @Mocked(stubOutClassInitialization = true) WebloggerConfig webloggerConfig;
 
+    @Mocked(stubOutClassInitialization = true) WebloggerFactory webloggerFactory;
+
+    @Mocked URL url;
+    @Mocked Weblog weblog;
 
     @Test
-    public void getName(@Mocked final ResourceBundle resourceBundle) {
+    public void getName() {
 
         new Expectations() {{
-            ResourceBundle.getBundle(anyString);
-            result = resourceBundle;
             WebloggerConfig.getProperty(anyString);
             result = "anApiKey";
             resourceBundle.getString(anyString);
@@ -53,20 +53,17 @@ public class AkismetCommentValidatorTest {
         assertEquals("aName", actualName);
     }
 
+
     @Test
-    public void validate_Exception_during_connetion_opening(
-            @Mocked(stubOutClassInitialization = true) WebloggerFactory unused,
-            @Mocked final Weblog weblog, @Mocked final URL url) throws IOException {
+    public void validate_Exception_during_connetion_opening() throws IOException {
 
         new Expectations() {{
-            ResourceBundle.getBundle(anyString);
-            result = null;
             WebloggerConfig.getProperty(anyString);
             result = "anApiKey";
-            WebloggerFactory.getWeblogger().getUrlStrategy().getWeblogURL(weblog, anyString, anyBoolean);
+            WebloggerFactory.getWeblogger().getUrlStrategy().getWeblogURL(weblog, null, true);
             result = "http://any.url";
-            URLConnection urlConnection = url.openConnection();
-            urlConnection.getOutputStream();
+            url = new URL("http://anApiKey.rest.akismet.com/1.1/comment-check");
+            url.openConnection().getOutputStream();
             result = new Exception("Simulated connection error");
         }};
 
@@ -80,14 +77,11 @@ public class AkismetCommentValidatorTest {
 
 
     @Test
-    public void validate_akismet_returns_false(@Mocked(stubOutClassInitialization = true) WebloggerFactory unused,
-                         @Mocked final Weblog weblog, @Mocked final URL url) throws IOException {
+    public void validate_akismet_returns_false() throws IOException {
 
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         new Expectations() {{
-            ResourceBundle.getBundle(anyString);
-            result = null;
             WebloggerConfig.getProperty(anyString);
             result = "anApiKey";
             WebloggerFactory.getWeblogger().getUrlStrategy().getWeblogURL(weblog, anyString, anyBoolean);
@@ -109,14 +103,11 @@ public class AkismetCommentValidatorTest {
     }
 
     @Test
-    public void validate_akismet_returns_true(@Mocked(stubOutClassInitialization = true) WebloggerFactory unused,
-                         @Mocked final Weblog weblog, @Mocked final URL url) throws IOException {
+    public void validate_akismet_returns_true() throws IOException {
 
         final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
         new Expectations() {{
-            ResourceBundle.getBundle(anyString);
-            result = null;
             WebloggerConfig.getProperty(anyString);
             result = "anApiKey";
             WebloggerFactory.getWeblogger().getUrlStrategy().getWeblogURL(weblog, anyString, anyBoolean);
