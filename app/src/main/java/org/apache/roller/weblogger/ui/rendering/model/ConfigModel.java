@@ -21,7 +21,7 @@ package org.apache.roller.weblogger.ui.rendering.model;
 import java.util.Map;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 
 /**
  * Model which provides access to application config data like site
@@ -130,17 +130,17 @@ public class ConfigModel implements Model {
     }
 
     private String getProperty(String name) {
-        return WebloggerRuntimeConfig.getProperty(name);
+        return WebloggerRuntimeConfigInstance.INSTANCE.getProperty(name);
     }
     
     
     private int getIntProperty(String name) {
-        return WebloggerRuntimeConfig.getIntProperty(name);
+        return WebloggerRuntimeConfigInstance.INSTANCE.getIntProperty(name);
     }
     
     
     private boolean getBooleanProperty(String name) {
-        return WebloggerRuntimeConfig.getBooleanProperty(name);
+        return WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty(name);
     }
     
 }

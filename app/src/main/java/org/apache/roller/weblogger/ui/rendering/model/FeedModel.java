@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.URLStrategy;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.pojos.wrapper.WeblogWrapper;
 import org.apache.roller.weblogger.ui.rendering.pagers.CommentsPager;
@@ -41,8 +41,8 @@ import org.apache.roller.weblogger.util.URLUtilities;
  */
 public class FeedModel implements Model {
     
-    private static int DEFAULT_ENTRIES = WebloggerRuntimeConfig.getIntProperty("site.newsfeeds.defaultEntries");
-    
+    private static int DEFAULT_ENTRIES = WebloggerRuntimeConfigInstance.INSTANCE.getIntProperty("site.newsfeeds.defaultEntries");
+
     private WeblogFeedRequest feedRequest = null;
     private URLStrategy urlStrategy = null;
     private Weblog weblog = null;

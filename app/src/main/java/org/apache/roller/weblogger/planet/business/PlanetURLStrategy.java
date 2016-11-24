@@ -19,7 +19,7 @@
 package org.apache.roller.weblogger.planet.business;
 
 import org.apache.roller.planet.business.MultiPlanetURLStrategy;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 
 
 /**
@@ -34,7 +34,7 @@ public class PlanetURLStrategy extends MultiPlanetURLStrategy {
      */
     public String getPlanetURL(String planet) {
         StringBuilder url = new StringBuilder();
-        url.append(WebloggerRuntimeConfig.getProperty("site.absoluteurl"));
+        url.append(WebloggerRuntimeConfigInstance.INSTANCE.getProperty("site.absoluteurl"));
         return url.toString();
     }
     
@@ -77,8 +77,8 @@ public class PlanetURLStrategy extends MultiPlanetURLStrategy {
         
         StringBuilder url = new StringBuilder();
         String sep = "?";
-        
-        url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+
+        url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         url.append("planetrss");
 
         if (group != null) {

@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.util.DateUtil;
 import org.apache.roller.weblogger.business.URLStrategy;
@@ -84,7 +84,7 @@ public abstract class AbstractWeblogEntriesPager implements WeblogEntriesPager {
         }
         
         // make sure offset, length, and page are valid
-        int maxLength = WebloggerRuntimeConfig.getIntProperty("site.pages.maxEntries");
+        int maxLength = WebloggerRuntimeConfigInstance.INSTANCE.getIntProperty("site.pages.maxEntries");
         length = weblog.getEntryDisplayCount();
         if(length > maxLength) {
             length = maxLength;

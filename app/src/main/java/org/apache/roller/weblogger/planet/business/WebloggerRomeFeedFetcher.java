@@ -32,7 +32,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.plugins.PluginManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.WeblogEntry.PubStatus;
 import org.apache.roller.weblogger.pojos.Weblog;
@@ -115,7 +115,7 @@ public class WebloggerRomeFeedFetcher extends RomeFeedFetcher {
         
         // lookup recent entries from weblog and add them to the subscription
         try {
-            int entryCount = WebloggerRuntimeConfig.getIntProperty("site.newsfeeds.defaultEntries");
+            int entryCount = WebloggerRuntimeConfigInstance.INSTANCE.getIntProperty("site.newsfeeds.defaultEntries");
 
             if (log.isDebugEnabled()) {
                 log.debug("Seeking up to " + entryCount + " entries from " + localWeblog.getHandle());

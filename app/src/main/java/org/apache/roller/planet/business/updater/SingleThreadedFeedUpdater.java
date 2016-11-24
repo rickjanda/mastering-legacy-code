@@ -31,7 +31,7 @@ import org.apache.roller.planet.pojos.Subscription;
 import org.apache.roller.planet.pojos.SubscriptionEntry;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 
 
 /**
@@ -219,8 +219,8 @@ public class SingleThreadedFeedUpdater implements FeedUpdater {
     
     // upate proxy settings for jvm based on planet configuration
     private void updateProxySettings() {
-        String proxyHost = WebloggerRuntimeConfig.getProperty("planet.site.proxyhost");
-        int proxyPort = WebloggerRuntimeConfig.getIntProperty("planet.site.proxyport");
+        String proxyHost = WebloggerRuntimeConfigInstance.INSTANCE.getProperty("planet.site.proxyhost");
+        int proxyPort = WebloggerRuntimeConfigInstance.INSTANCE.getIntProperty("planet.site.proxyport");
         if (proxyHost != null && proxyPort > 0) {
             System.setProperty("proxySet", "true");
             System.setProperty("http.proxyHost", proxyHost);

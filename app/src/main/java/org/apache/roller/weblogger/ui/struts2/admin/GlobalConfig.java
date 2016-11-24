@@ -32,7 +32,7 @@ import org.apache.roller.weblogger.business.WeblogManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.plugins.PluginManager;
 import org.apache.roller.weblogger.business.plugins.comment.WeblogEntryCommentPlugin;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.config.runtime.ConfigDef;
 import org.apache.roller.weblogger.config.runtime.RuntimeConfigDefs;
 import org.apache.roller.weblogger.pojos.GlobalPermission;
@@ -114,7 +114,7 @@ public class GlobalConfig extends UIAction implements ParameterAware, ServletReq
         }
 
         // set config def used to draw the view
-        RuntimeConfigDefs defs = WebloggerRuntimeConfig.getRuntimeConfigDefs();
+        RuntimeConfigDefs defs = WebloggerRuntimeConfigInstance.INSTANCE.getRuntimeConfigDefs();
         List<ConfigDef> configDefs = defs.getConfigDefs();
         for (ConfigDef configDef : configDefs) {
             if ("global-properties".equals(configDef.getName())) {
@@ -135,8 +135,8 @@ public class GlobalConfig extends UIAction implements ParameterAware, ServletReq
     public String execute() {
         
         // setup array of configured plugins
-        if (!StringUtils.isEmpty(WebloggerRuntimeConfig.getProperty("users.comments.plugins"))) {
-            setCommentPlugins(StringUtils.split(WebloggerRuntimeConfig.getProperty("users.comments.plugins"), ","));
+        if (!StringUtils.isEmpty(WebloggerRuntimeConfigInstance.INSTANCE.getProperty("users.comments.plugins"))) {
+            setCommentPlugins(StringUtils.split(WebloggerRuntimeConfigInstance.INSTANCE.getProperty("users.comments.plugins"), ","));
         }
         
         return SUCCESS;

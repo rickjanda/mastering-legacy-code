@@ -153,5 +153,20 @@ public class ProfileBean {
         this.timeZone = dataHolder.getTimeZone();
         this.openIdUrl = dataHolder.getOpenIdUrl();
     }
-    
+
+    public String getStateAsString() {
+        return "ProfileBean{" +
+                "id='" + id + '\'' +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", screenName='" + screenName + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", emailAddress='" + emailAddress + '\'' +
+                ", locale='" + locale + '\'' +
+                ", timeZone='" + timeZone + '\'' +
+                ", openIdUrl='" + openIdUrl + '\'' +
+                ", passwordText='" + passwordText + '\'' +
+                ", passwordConfirm='" + passwordConfirm + '\'' +
+                '}';
+    }
 }

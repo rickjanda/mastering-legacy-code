@@ -28,7 +28,7 @@ import org.apache.roller.weblogger.business.URLStrategy;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.ui.rendering.util.WeblogRequest;
@@ -84,7 +84,7 @@ public class URLModel implements Model {
     
     /** Relative URL of Roller, e.g. /roller */
     public String getSite() {
-        return WebloggerRuntimeConfig.getRelativeContextURL();
+        return WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL();
     }
     
     
@@ -95,7 +95,7 @@ public class URLModel implements Model {
         if (weblogAbsoluteURL != null) {
             return weblogAbsoluteURL;
         } else {
-            return WebloggerRuntimeConfig.getAbsoluteContextURL();
+            return WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL();
         }
     }
     

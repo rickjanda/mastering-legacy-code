@@ -30,7 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 
 /**
  * A special initialization filter which ensures that we have an opportunity to
@@ -59,8 +59,8 @@ public class InitFilter implements Filter {
             String absPath = this.getAbsoluteUrl(request);
 
             // set them in our config
-            WebloggerRuntimeConfig.setAbsoluteContextURL(absPath);
-            WebloggerRuntimeConfig.setRelativeContextURL(relPath);
+            WebloggerRuntimeConfigInstance.INSTANCE.setAbsoluteContextURL(absPath);
+            WebloggerRuntimeConfigInstance.INSTANCE.setRelativeContextURL(relPath);
 
             if (log.isDebugEnabled()) {
                 log.debug("relPath = " + relPath);

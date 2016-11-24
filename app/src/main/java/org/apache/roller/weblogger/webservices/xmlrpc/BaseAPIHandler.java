@@ -24,9 +24,9 @@ import java.io.Serializable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.business.WeblogManager;
@@ -128,7 +128,7 @@ public class BaseAPIHandler implements Serializable {
                 weblogFound = true;
                 weblogEnabled = website.getVisible();
                 apiEnabled = website.getEnableBloggerApi()
-                	&& WebloggerRuntimeConfig.getBooleanProperty("webservices.enableXmlRpc");
+                	&& WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("webservices.enableXmlRpc");
             }
             
             if (user != null) {
@@ -193,8 +193,8 @@ public class BaseAPIHandler implements Serializable {
                 }
                 //System.out.println("is now [" + password + "]");
                 authenticated = user.getPassword().equals(password);
-                
-                apiEnabled = WebloggerRuntimeConfig.getBooleanProperty("webservices.enableXmlRpc");
+
+                apiEnabled = WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("webservices.enableXmlRpc");
             }
         } catch (Exception e) {
             mLogger.error("ERROR internal error validating user", e);

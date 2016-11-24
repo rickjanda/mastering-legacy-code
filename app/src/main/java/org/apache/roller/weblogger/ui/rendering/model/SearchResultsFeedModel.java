@@ -40,7 +40,7 @@ import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.search.FieldConstants;
 import org.apache.roller.weblogger.business.search.IndexManager;
 import org.apache.roller.weblogger.business.search.operations.SearchOperation;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.wrapper.WeblogCategoryWrapper;
@@ -123,8 +123,7 @@ public class SearchResultsFeedModel implements Model {
 			return;
 		}
 
-		this.entryCount = WebloggerRuntimeConfig
-				.getIntProperty("site.newsfeeds.defaultEntries");
+        this.entryCount = WebloggerRuntimeConfigInstance.INSTANCE.getIntProperty("site.newsfeeds.defaultEntries");
 
 		// setup the search
 		IndexManager indexMgr = WebloggerFactory.getWeblogger()
@@ -133,7 +132,7 @@ public class SearchResultsFeedModel implements Model {
 		SearchOperation search = new SearchOperation(indexMgr);
 		search.setTerm(feedRequest.getTerm());
 
-		if (WebloggerRuntimeConfig.isSiteWideWeblog(feedRequest
+		if (WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(feedRequest
 				.getWeblogHandle())) {
 			this.websiteSpecificSearch = false;
 		} else {

@@ -28,12 +28,12 @@ import org.apache.roller.weblogger.business.plugins.entry.WeblogEntryPlugin;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.business.BookmarkManager;
 import org.apache.roller.weblogger.business.plugins.PluginManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.themes.ThemeManager;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.WeblogEntry.PubStatus;
 import org.apache.roller.util.UUIDGenerator;
 import org.apache.roller.weblogger.business.UserManager;
@@ -479,9 +479,9 @@ public class Weblog implements Serializable {
     /**
      * Returns true if comment moderation is required by website or config.
      */ 
-    public boolean getCommentModerationRequired() { 
+    public boolean getCommentModerationRequired() {
         return (getModerateComments()
-         || WebloggerRuntimeConfig.getBooleanProperty("users.moderation.required"));
+         || WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("users.moderation.required"));
     }
     
     /** No-op */

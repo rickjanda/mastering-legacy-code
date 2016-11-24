@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.Weblog;
@@ -46,7 +47,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.OAuthManager;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.pojos.WeblogPermission;
 
 
@@ -117,10 +117,10 @@ public class RollerAtomHandler implements AtomHandler {
         roller = WebloggerFactory.getWeblogger();
 
         String userName;
-        if ("oauth".equals(WebloggerRuntimeConfig.getProperty("webservices.atomPubAuth"))) {
+        if ("oauth".equals(WebloggerRuntimeConfigInstance.INSTANCE.getProperty("webservices.atomPubAuth"))) {
             userName = authenticationOAUTH(request, response);
 
-        } else if ("wsse".equals(WebloggerRuntimeConfig.getProperty("webservices.atomPubAuth"))) {
+        } else if ("wsse".equals(WebloggerRuntimeConfigInstance.INSTANCE.getProperty("webservices.atomPubAuth"))) {
             userName = authenticateWSSE(request);
 
         } else {

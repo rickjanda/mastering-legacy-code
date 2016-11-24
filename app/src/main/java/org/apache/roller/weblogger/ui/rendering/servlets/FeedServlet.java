@@ -33,7 +33,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.StaticTemplate;
 import org.apache.roller.weblogger.pojos.Template;
 import org.apache.roller.weblogger.pojos.TemplateRendition.TemplateLanguage;
@@ -101,7 +101,7 @@ public class FeedServlet extends HttpServlet {
             }
 
             // is this the site-wide weblog?
-            isSiteWide = WebloggerRuntimeConfig.isSiteWideWeblog(feedRequest
+            isSiteWide = WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(feedRequest
                     .getWeblogHandle());
 
         } catch (Exception e) {
@@ -132,8 +132,7 @@ public class FeedServlet extends HttpServlet {
         // set content type
         String accepts = request.getHeader("Accept");
         String userAgent = request.getHeader("User-Agent");
-        if (WebloggerRuntimeConfig
-                .getBooleanProperty("site.newsfeeds.styledFeeds")
+        if (WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("site.newsfeeds.styledFeeds")
                 && accepts != null
                 && accepts.contains("*/*")
                 && userAgent != null && userAgent.startsWith("Mozilla")) {
@@ -220,7 +219,7 @@ public class FeedServlet extends HttpServlet {
         String pageId;
         try {
             // determine what template to render with
-            boolean siteWide = WebloggerRuntimeConfig.isSiteWideWeblog(weblog
+            boolean siteWide = WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(weblog
                     .getHandle());
             if (siteWide && "entries".equals(feedRequest.getType())
                     && feedRequest.getTerm() != null) {

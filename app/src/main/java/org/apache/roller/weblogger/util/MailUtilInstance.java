@@ -18,46 +18,34 @@
 
 package org.apache.roller.weblogger.util;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TreeSet;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.SendFailedException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.MailProvider;
-import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogManager;
+import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.startup.WebloggerStartup;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
-import org.apache.roller.weblogger.pojos.User;
-import org.apache.roller.weblogger.pojos.WeblogEntry;
-import org.apache.roller.weblogger.pojos.Weblog;
-import org.apache.roller.weblogger.pojos.WeblogEntryComment;
-import org.apache.roller.weblogger.pojos.WeblogPermission;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
+import org.apache.roller.weblogger.pojos.*;
 import org.apache.roller.weblogger.util.RollerMessages.RollerMessage;
+
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.text.MessageFormat;
+import java.util.*;
 
 
 /**
  * A utility class for helping with sending email. 
  */
-public class MailUtil {
-    
-    private static Log log = LogFactory.getLog(MailUtil.class);
+public class MailUtilInstance {
+
+    public static final MailUtilInstance INSTANCE = new MailUtilInstance();
+
+
+    private static Log log = LogFactory.getLog(MailUtilInstance.class);
     
     private static final String EMAIL_ADDR_REGEXP = "^.*@.*[.].{2,}$";
     
@@ -67,14 +55,14 @@ public class MailUtil {
      * when mail is not properly configured. We'll complain about that at 
      * startup, no need to complain on every attempt to send.
      */
-    public static boolean isMailConfigured() {
+    public boolean isMailConfigured() {
         return WebloggerStartup.getMailProvider() != null; 
     }
     
     /**
      * Send an email notice that a new pending entry has been submitted.
      */
-    public static void sendPendingEntryNotice(WeblogEntry entry) throws WebloggerException {
+    public void sendPendingEntryNotice(WeblogEntry entry) throws WebloggerException {
         
         Session mailSession = WebloggerStartup.getMailProvider() != null
                 ? WebloggerStartup.getMailProvider().getSession() : null;
@@ -130,7 +118,7 @@ public class MailUtil {
                     new Object[] { userName, userName, editURL })
                     );
             content = sb.toString();
-            MailUtil.sendTextMessage(
+            this.sendTextMessage(
                     from, to, cc, bcc, subject, content);
         } catch (MessagingException e) {
             log.error("ERROR: Problem sending pending entry notification email.");
@@ -141,7 +129,7 @@ public class MailUtil {
     /**
      * Send a weblog invitation email.
      */
-    public static void sendWeblogInvitation(Weblog website, User user)
+    public void sendWeblogInvitation(Weblog website, User user)
             throws WebloggerException {
         
         Session mailSession = WebloggerStartup.getMailProvider() != null
@@ -161,7 +149,7 @@ public class MailUtil {
             String content;
             
             // Figure URL to entry edit page
-            String rootURL = WebloggerRuntimeConfig.getAbsoluteContextURL();
+            String rootURL = WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL();
             String url = rootURL + "/roller-ui/menu.rol";
             
             ResourceBundle resources = ResourceBundle.getBundle(
@@ -185,7 +173,7 @@ public class MailUtil {
                 url
             }));
             content = sb.toString();
-            MailUtil.sendTextMessage(
+            this.sendTextMessage(
                     from, to, cc, bcc, subject, content);
         } catch (MessagingException e) {
             throw new WebloggerException("ERROR: Notification email(s) not sent, "
@@ -197,7 +185,7 @@ public class MailUtil {
     /**
      * Send a weblog invitation email.
      */
-    public static void sendUserActivationEmail(User user)
+    public void sendUserActivationEmail(User user)
             throws WebloggerException {
         
         Session mailSession = WebloggerStartup.getMailProvider() != null
@@ -211,9 +199,8 @@ public class MailUtil {
         try {
             ResourceBundle resources = ResourceBundle.getBundle(
                     "ApplicationResources", I18nUtils.toLocale(user.getLocale()));
-            
-            String from = WebloggerRuntimeConfig.getProperty(
-                    "user.account.activation.mail.from");
+
+            String from = WebloggerRuntimeConfigInstance.INSTANCE.getProperty("user.account.activation.mail.from");
             
             String cc[] = new String[0];
             String bcc[] = new String[0];
@@ -221,8 +208,8 @@ public class MailUtil {
             String subject = resources.getString(
                     "user.account.activation.mail.subject");
             String content;
-            
-            String rootURL = WebloggerRuntimeConfig.getAbsoluteContextURL();
+
+            String rootURL = WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL();
             
             StringBuilder sb = new StringBuilder();
             
@@ -251,7 +238,7 @@ public class MailUtil {
      *                           Errors will be assumed to be "validation errors" 
      *                           and messages will be assumed to be "from the system"
      */
-    public static void sendEmailNotification(WeblogEntryComment commentObject,
+    public void sendEmailNotification(WeblogEntryComment commentObject,
                                              RollerMessages messages, 
                                              I18nMessages resources,
                                              boolean notifySubscribers) 
@@ -265,7 +252,7 @@ public class MailUtil {
         
         // Only send email if email notification is enabled, or a pending message that needs moderation.
         if (!commentObject.getPending()) {
-            boolean notify = WebloggerRuntimeConfig.getBooleanProperty("users.comments.emailnotify");
+            boolean notify = WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("users.comments.emailnotify");
             if (!notify) {
                 // notifications disabled, just bail
                 return;
@@ -313,7 +300,7 @@ public class MailUtil {
         // Determine with mime type to use for e-mail
         StringBuilder msg = new StringBuilder();
         StringBuilder ownermsg = new StringBuilder();
-        boolean escapeHtml = !WebloggerRuntimeConfig.getBooleanProperty("users.comments.htmlenabled");
+        boolean escapeHtml = !WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("users.comments.htmlenabled");
         
         // first the common stub message for the owner and commenters (if applicable)
         if (!escapeHtml) {
@@ -495,7 +482,7 @@ public class MailUtil {
     }
     
 
-    public static void sendEmailApprovalNotifications(List<WeblogEntryComment> comments,
+    public void sendEmailApprovalNotifications(List<WeblogEntryComment> comments,
                                                I18nMessages resources) 
             throws MailingException {
         
@@ -514,7 +501,7 @@ public class MailUtil {
     /**
      * Send message to author of approved comment
      */
-    public static void sendEmailApprovalNotification(WeblogEntryComment cd, I18nMessages resources)
+    public void sendEmailApprovalNotification(WeblogEntryComment cd, I18nMessages resources)
             throws MailingException {
         
         WeblogEntry entry = cd.getWeblogEntry();
@@ -564,7 +551,7 @@ public class MailUtil {
      * @param mimeType type of message, i.e. text/plain or text/html
      * @throws MessagingException the exception to indicate failure
      */
-    public static void sendMessage(String from, String[] to, String[] cc, String[] bcc, String subject,
+    public void sendMessage(String from, String[] to, String[] cc, String[] bcc, String subject,
             String content, String mimeType) throws MessagingException {
         
         MailProvider mailProvider = WebloggerStartup.getMailProvider();
@@ -672,7 +659,7 @@ public class MailUtil {
      * @param content the body of the e-mail
      * @throws MessagingException the exception to indicate failure
      */
-    public static void sendTextMessage(String from, String[] to, String[] cc, String[] bcc,
+    public void sendTextMessage(String from, String[] to, String[] cc, String[] bcc,
                                        String subject, String content) throws MessagingException {
         sendMessage(from, to, cc, bcc, subject, content, "text/plain; charset=utf-8");
     }
@@ -686,7 +673,7 @@ public class MailUtil {
      * @param content the body of the e-mail
      * @throws MessagingException the exception to indicate failure
      */
-    public static void sendHTMLMessage(String from, String[] to, String[] cc, String[] bcc, String subject,
+    public void sendHTMLMessage(String from, String[] to, String[] cc, String[] bcc, String subject,
                                        String content) throws MessagingException {
         sendMessage(from, to, cc, bcc, subject, content, "text/html; charset=utf-8");
     }

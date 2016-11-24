@@ -153,7 +153,7 @@ public final class PingConfig {
      * @return the configured (or default) value of the suspend ping processing setting.
      */
     public static boolean getSuspendPingProcessing() {
-        return WebloggerRuntimeConfig.getBooleanProperty(PINGS_SUSPEND_PING_PROCESSING_PROP);
+        return WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty(PINGS_SUSPEND_PING_PROCESSING_PROP);
     }
 
     /**

@@ -32,11 +32,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.util.RollerConstants;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.planet.business.PlanetManager;
 import org.apache.roller.planet.config.PlanetRuntimeConfig;
 import org.apache.roller.planet.pojos.Planet;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.StaticTemplate;
 import org.apache.roller.weblogger.pojos.Template;
 import org.apache.roller.weblogger.pojos.TemplateRendition.TemplateLanguage;
@@ -152,20 +152,17 @@ public class PlanetFeedServlet extends HttpServlet {
                     PlanetRuntimeConfig.getProperty("planet.site.description"));
 
 
-            if (StringUtils.isNotEmpty(WebloggerRuntimeConfig
-                    .getProperty("planet.site.absoluteurl"))) {
+            if (StringUtils.isNotEmpty(WebloggerRuntimeConfigInstance.INSTANCE.getProperty("planet.site.absoluteurl"))) {
                 model.put("absoluteSite",
                         PlanetRuntimeConfig.getProperty("planet.site.absoluteurl"));
             } else {
                 model.put("absoluteSite",
-                        WebloggerRuntimeConfig.getAbsoluteContextURL());
+                        WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
             }
 
-            model.put("feedStyle", WebloggerRuntimeConfig
-                    .getBooleanProperty("site.newsfeeds.styledFeeds"));
+            model.put("feedStyle", WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("site.newsfeeds.styledFeeds"));
 
-            int numEntries = WebloggerRuntimeConfig
-                    .getIntProperty("site.newsfeeds.defaultEntries");
+            int numEntries = WebloggerRuntimeConfigInstance.INSTANCE.getIntProperty("site.newsfeeds.defaultEntries");
 
             int entryCount = numEntries;
             String sCount = request.getParameter("count");

@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.URLStrategy;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.util.Utilities;
 
@@ -54,7 +54,7 @@ public class OpenSearchServlet extends HttpServlet {
 
         if (pathInfo.length == 0) {
             // URL format: [context]/roller-services/opensearch
-            handle = WebloggerRuntimeConfig.getProperty("site.frontpage.weblog.handle");
+            handle = WebloggerRuntimeConfigInstance.INSTANCE.getProperty("site.frontpage.weblog.handle");
 
         } else if (pathInfo.length == 1) {
             // URL format: [context]/roller-services/opensearch/[weblog-handle]
@@ -83,14 +83,14 @@ public class OpenSearchServlet extends HttpServlet {
         searchFeed = StringEscapeUtils.escapeXml(
                 strat.getWeblogSearchFeedURLTemplate(weblog));
 
-        boolean siteWide = WebloggerRuntimeConfig.isSiteWideWeblog(handle);
+        boolean siteWide = WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(handle);
         if (siteWide) {
             shortName = "[Search Descriptor] " + StringEscapeUtils.escapeXml(
-                    WebloggerRuntimeConfig.getProperty("site.shortName"));
+                    WebloggerRuntimeConfigInstance.INSTANCE.getProperty("site.shortName"));
             description = StringEscapeUtils.escapeXml(
-                    WebloggerRuntimeConfig.getProperty("site.description"));
+                    WebloggerRuntimeConfigInstance.INSTANCE.getProperty("site.description"));
             contact = StringEscapeUtils.escapeXml(
-                    WebloggerRuntimeConfig.getProperty("site.adminemail"));
+                    WebloggerRuntimeConfigInstance.INSTANCE.getProperty("site.adminemail"));
                     
         } else {
             shortName = StringEscapeUtils.escapeXml(weblog.getName());

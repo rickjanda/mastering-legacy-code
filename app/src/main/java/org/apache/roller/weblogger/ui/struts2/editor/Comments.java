@@ -42,10 +42,10 @@ import org.apache.roller.weblogger.pojos.WeblogEntryComment.ApprovalStatus;
 import org.apache.roller.weblogger.pojos.WeblogPermission;
 import org.apache.roller.weblogger.ui.struts2.pagers.CommentsPager;
 import org.apache.roller.weblogger.ui.struts2.util.KeyValueObject;
+import org.apache.roller.weblogger.util.MailUtilInstance;
 import org.apache.roller.weblogger.util.cache.CacheManager;
 import org.apache.roller.weblogger.ui.struts2.util.UIAction;
 import org.apache.roller.weblogger.util.I18nMessages;
-import org.apache.roller.weblogger.util.MailUtil;
 import org.apache.roller.weblogger.util.Utilities;
 
 /**
@@ -375,11 +375,10 @@ public class Comments extends UIAction {
             CacheManager.invalidate(getActionWeblog());
 
             // if required, send notification for all comments changed
-            if (MailUtil.isMailConfigured()) {
+            if (MailUtilInstance.INSTANCE.isMailConfigured()) {
                 I18nMessages resources = I18nMessages
                         .getMessages(getActionWeblog().getLocaleInstance());
-                MailUtil.sendEmailApprovalNotifications(approvedComments,
-                        resources);
+                MailUtilInstance.INSTANCE.sendEmailApprovalNotifications(approvedComments, resources);
             }
 
             // if we've got entries to reindex then do so

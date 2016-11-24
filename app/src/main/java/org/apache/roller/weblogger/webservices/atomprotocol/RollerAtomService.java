@@ -27,7 +27,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.MediaFileManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.MediaFileDirectory;
 import org.apache.roller.weblogger.pojos.RuntimeConfigProperty;
 import org.apache.roller.weblogger.pojos.User;
@@ -55,8 +55,8 @@ public class RollerAtomService extends AtomService {
     public RollerAtomService(User user, String atomURL) throws WebloggerException, AtomException {
         Weblogger roller = WebloggerFactory.getWeblogger();
         List<WeblogPermission> perms;
-        
-        if (!WebloggerRuntimeConfig.getBooleanProperty("webservices.enableAtomPub")) {
+
+        if (!WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("webservices.enableAtomPub")) {
         	throw new AtomException("AtomPub not enabled for this Roller installation");
         }
         

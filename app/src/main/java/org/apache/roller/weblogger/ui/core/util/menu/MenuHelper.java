@@ -32,7 +32,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.GlobalPermission;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.Weblog;
@@ -304,8 +304,8 @@ public final class MenuHelper {
      * @return the boolean property
      */
     private static boolean getBooleanProperty(String propertyName) {
-        if (WebloggerRuntimeConfig.getProperty(propertyName) != null) {
-            return WebloggerRuntimeConfig.getBooleanProperty(propertyName);
+        if (WebloggerRuntimeConfigInstance.INSTANCE.getProperty(propertyName) != null) {
+            return WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty(propertyName);
         }
         return WebloggerConfig.getBooleanProperty(propertyName);
     }

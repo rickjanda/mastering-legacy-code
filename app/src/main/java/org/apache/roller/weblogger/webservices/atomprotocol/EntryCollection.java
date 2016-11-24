@@ -49,7 +49,7 @@ import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.search.IndexManager;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.pojos.WeblogCategory;
@@ -167,7 +167,7 @@ public class EntryCollection {
                 }
             }        
             String handle = pathInfo[0];
-            String absUrl = WebloggerRuntimeConfig.getAbsoluteContextURL();
+            String absUrl = WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL();
             Weblog website = roller.getWeblogManager().getWeblogByHandle(handle);
             if (website == null) {
                 throw new AtomNotFoundException("Cannot find specified weblog");

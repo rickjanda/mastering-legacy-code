@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
 
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 import org.apache.roller.weblogger.util.LinkbackExtractor;
 import org.apache.roller.weblogger.util.RollerMessages;
@@ -45,7 +45,7 @@ public class TrackbackLinkbackCommentValidator implements CommentValidator {
         
         // linkback validation can be toggled at runtime, so check if it's enabled
         // if it's disabled then just return a score of 100
-        if(!WebloggerRuntimeConfig.getBooleanProperty("site.trackbackVerification.enabled")) {
+        if(!WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("site.trackbackVerification.enabled")) {
             return RollerConstants.PERCENT_100;
         }
         

@@ -51,7 +51,7 @@ import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.plugins.entry.WeblogEntryPlugin;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.util.HTMLSanitizer;
 import org.apache.roller.weblogger.util.I18nMessages;
 import org.apache.roller.weblogger.util.Utilities;
@@ -641,7 +641,7 @@ public class WeblogEntry implements Serializable {
      * site-wide configs.
      */
     public boolean getCommentsStillAllowed() {
-        if (!WebloggerRuntimeConfig.getBooleanProperty("users.comments.enabled")) {
+        if (!WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("users.comments.enabled")) {
             return false;
         }
         if (getWebsite().getAllowComments() != null && !getWebsite().getAllowComments()) {

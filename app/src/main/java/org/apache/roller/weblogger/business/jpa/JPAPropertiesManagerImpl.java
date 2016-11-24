@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.InitializationException;
 import org.apache.roller.weblogger.business.PropertiesManager;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.config.runtime.ConfigDef;
 import org.apache.roller.weblogger.config.runtime.DisplayGroup;
 import org.apache.roller.weblogger.config.runtime.PropertyDef;
@@ -156,7 +156,7 @@ public class JPAPropertiesManagerImpl implements PropertiesManager {
 
         // start by getting our runtimeConfigDefs
         RuntimeConfigDefs runtimeConfigDefs =
-                WebloggerRuntimeConfig.getRuntimeConfigDefs();
+                WebloggerRuntimeConfigInstance.INSTANCE.getRuntimeConfigDefs();
 
         // can't do initialization without our config defs
         if(runtimeConfigDefs == null) {

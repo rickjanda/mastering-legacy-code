@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance" %><%--
   Licensed to the Apache Software Foundation (ASF) under one or more
   contributor license agreements.  The ASF licenses this file to You
   under the Apache License, Version 2.0 (the "License"); you may not
@@ -17,8 +17,8 @@
 --%><%@ page session="false" %><%
 
 // lets see if we have a frontpage blog
-String frontpageBlog =
-        org.apache.roller.weblogger.config.WebloggerRuntimeConfig.getProperty("site.frontpage.weblog.handle");
+    String frontpageBlog =
+            WebloggerRuntimeConfigInstance.INSTANCE.getProperty("site.frontpage.weblog.handle");
 
 if (frontpageBlog != null && !"".equals(frontpageBlog.trim())) {
     // dispatch to frontpage blog

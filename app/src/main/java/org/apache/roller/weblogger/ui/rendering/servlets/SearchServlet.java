@@ -37,7 +37,7 @@ import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.themes.ThemeManager;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.ThemeTemplate;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.pojos.WeblogTheme;
@@ -116,7 +116,7 @@ public class SearchServlet extends HttpServlet {
                 boolean reloaded = manager.reLoadThemeFromDisk(weblog
                         .getEditorTheme());
                 if (reloaded) {
-                    if (WebloggerRuntimeConfig.isSiteWideWeblog(searchRequest
+                    if (WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(searchRequest
                             .getWeblogHandle())) {
                         SiteWideCache.getInstance().clear();
                     } else {
@@ -210,7 +210,7 @@ public class SearchServlet extends HttpServlet {
             ModelLoader.loadModels(searchModels, model, initData, true);
 
             // Load special models for site-wide blog
-            if (WebloggerRuntimeConfig.isSiteWideWeblog(weblog.getHandle())) {
+            if (WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(weblog.getHandle())) {
                 String siteModels = WebloggerConfig
                         .getProperty("rendering.siteModels");
                 ModelLoader.loadModels(siteModels, model, initData, true);

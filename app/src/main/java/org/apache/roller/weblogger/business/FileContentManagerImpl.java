@@ -30,7 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.FileContent;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.util.RollerMessages;
@@ -157,8 +157,8 @@ public class FileContentManagerImpl implements FileContentManager {
      * @see org.apache.roller.weblogger.business.FileContentManager#overQuota(Weblog)
      */
     public boolean overQuota(Weblog weblog) {
-        
-        String maxDir = WebloggerRuntimeConfig.getProperty("uploads.dir.maxsize");
+
+        String maxDir = WebloggerRuntimeConfigInstance.INSTANCE.getProperty("uploads.dir.maxsize");
 
         // maxDirSize in megabytes
         BigDecimal maxDirSize = new BigDecimal(maxDir);
@@ -193,14 +193,14 @@ public class FileContentManagerImpl implements FileContentManager {
                            RollerMessages messages) {
         
         // first check, is uploading enabled?
-        if(!WebloggerRuntimeConfig.getBooleanProperty("uploads.enabled")) {
+        if(!WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("uploads.enabled")) {
             messages.addError("error.upload.disabled");
             return false;
         }
         
         // second check, does upload exceed max size for file?
         BigDecimal maxFileMB = new BigDecimal(
-                WebloggerRuntimeConfig.getProperty("uploads.file.maxsize"));
+                WebloggerRuntimeConfigInstance.INSTANCE.getProperty("uploads.file.maxsize"));
         int maxFileBytes = (int)(RollerConstants.ONE_MB_IN_BYTES * maxFileMB.doubleValue());
         log.debug("max allowed file size = "+maxFileBytes);
         log.debug("attempted save file size = "+size);
@@ -212,7 +212,7 @@ public class FileContentManagerImpl implements FileContentManager {
         
         // third check, does file cause weblog to exceed quota?
         BigDecimal maxDirMB = new BigDecimal(
-                WebloggerRuntimeConfig.getProperty("uploads.dir.maxsize"));
+                WebloggerRuntimeConfigInstance.INSTANCE.getProperty("uploads.dir.maxsize"));
         long maxDirBytes = (long)(RollerConstants.ONE_MB_IN_BYTES * maxDirMB.doubleValue());
         try {
             File storageDirectory = this.getRealFile(weblog, null);
@@ -228,8 +228,8 @@ public class FileContentManagerImpl implements FileContentManager {
         }
         
         // fourth check, is upload type allowed?
-        String allows = WebloggerRuntimeConfig.getProperty("uploads.types.allowed");
-        String forbids = WebloggerRuntimeConfig.getProperty("uploads.types.forbid");
+        String allows = WebloggerRuntimeConfigInstance.INSTANCE.getProperty("uploads.types.allowed");
+        String forbids = WebloggerRuntimeConfigInstance.INSTANCE.getProperty("uploads.types.forbid");
         String[] allowFiles = StringUtils.split(StringUtils.deleteWhitespace(allows), ",");
         String[] forbidFiles = StringUtils.split(StringUtils.deleteWhitespace(forbids), ",");
         if (!checkFileType(allowFiles, forbidFiles, fileName, contentType)) {

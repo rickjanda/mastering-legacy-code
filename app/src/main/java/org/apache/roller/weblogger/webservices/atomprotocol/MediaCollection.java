@@ -53,7 +53,7 @@ import org.apache.roller.weblogger.business.MediaFileManager;
 import org.apache.roller.weblogger.business.WeblogManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.MediaFile;
 import org.apache.roller.weblogger.pojos.MediaFileDirectory;
 import org.apache.roller.weblogger.pojos.User;
@@ -258,7 +258,7 @@ public class MediaCollection {
             }
             
             String handle = pathInfo[0];
-            String absUrl = WebloggerRuntimeConfig.getAbsoluteContextURL();
+            String absUrl = WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL();
             Weblog website = roller.getWeblogManager().getWeblogByHandle(handle);
             if (website == null) {
                 throw new AtomNotFoundException("Cannot find weblog: " + handle);

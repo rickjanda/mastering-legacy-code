@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
 import org.apache.roller.weblogger.business.MediaFileManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.MediaFile;
 import org.apache.roller.weblogger.pojos.MediaFileDirectory;
 import org.apache.roller.weblogger.util.RollerMessages;
@@ -244,7 +244,7 @@ public class MediaFileAdd extends MediaFileBase {
         //
 
         // make sure uploads are enabled
-        if (!WebloggerRuntimeConfig.getBooleanProperty("uploads.enabled")) {
+        if (!WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("uploads.enabled")) {
             addError("error.upload.disabled");
         }
     }

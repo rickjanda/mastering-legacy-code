@@ -31,9 +31,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.WebloggerException;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment.ApprovalStatus;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
@@ -42,7 +42,7 @@ import org.apache.roller.weblogger.ui.rendering.plugins.comments.CommentValidati
 import org.apache.roller.weblogger.ui.rendering.plugins.comments.TrackbackLinkbackCommentValidator;
 import org.apache.roller.weblogger.ui.rendering.util.WeblogTrackbackRequest;
 import org.apache.roller.weblogger.util.I18nMessages;
-import org.apache.roller.weblogger.util.MailUtil;
+import org.apache.roller.weblogger.util.MailUtilInstance;
 import org.apache.roller.weblogger.util.RollerMessages;
 import org.apache.roller.weblogger.util.cache.CacheManager;
 
@@ -96,7 +96,7 @@ public class TrackbackServlet extends HttpServlet {
         RollerMessages messages = new RollerMessages();
         
         WeblogTrackbackRequest trackbackRequest = null;
-        if (!WebloggerRuntimeConfig.getBooleanProperty("users.trackbacks.enabled")) {
+        if (!WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("users.trackbacks.enabled")) {
             error = "Trackbacks are disabled for this site";
         } else {
             
@@ -177,7 +177,7 @@ public class TrackbackServlet extends HttpServlet {
                 
                 // save, commit, send response
                 if (!ApprovalStatus.SPAM.equals(comment.getStatus()) ||
-                        !WebloggerRuntimeConfig.getBooleanProperty("trackbacks.ignoreSpam.enabled")) {
+                        !WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("trackbacks.ignoreSpam.enabled")) {
                     
                     WeblogEntryManager mgr = WebloggerFactory.getWeblogger().getWeblogEntryManager();
                     mgr.saveComment(comment);
@@ -190,10 +190,8 @@ public class TrackbackServlet extends HttpServlet {
                     }
                     
                     // Send email notifications
-                    MailUtil.sendEmailNotification(comment, messages, 
-                            I18nMessages.getMessages(trackbackRequest.getLocaleInstance()),
-                            validationScore == RollerConstants.PERCENT_100);
-                    
+                    MailUtilInstance.INSTANCE.sendEmailNotification(comment, messages, I18nMessages.getMessages(trackbackRequest.getLocaleInstance()), validationScore == RollerConstants.PERCENT_100);
+
                     if (ApprovalStatus.PENDING.equals(comment.getStatus())) {
                         pw.println(this.getSuccessResponse("Trackback submitted to moderator"));
                     } else {

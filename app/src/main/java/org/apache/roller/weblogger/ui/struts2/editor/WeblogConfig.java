@@ -29,7 +29,7 @@ import org.apache.roller.weblogger.business.plugins.PluginManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.plugins.entry.WeblogEntryPlugin;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.ui.core.RollerContext;
 import org.apache.roller.weblogger.ui.core.plugins.UIPluginManager;
@@ -177,7 +177,7 @@ public class WeblogConfig extends UIAction {
     private void myValidate() {
         
         // make sure user didn't enter an invalid entry display count
-        int maxEntries = WebloggerRuntimeConfig.getIntProperty("site.pages.maxEntries");
+        int maxEntries = WebloggerRuntimeConfigInstance.INSTANCE.getIntProperty("site.pages.maxEntries");
         if(getBean().getEntryDisplayCount() > maxEntries) {
             addError("websiteSettings.error.entryDisplayCount");
         }

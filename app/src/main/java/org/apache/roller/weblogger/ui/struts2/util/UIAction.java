@@ -23,7 +23,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.GlobalPermission;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.Weblog;
@@ -144,18 +144,18 @@ public abstract class UIAction extends ActionSupport
     }
 
     public String getSiteURL() {
-        return WebloggerRuntimeConfig.getRelativeContextURL();
+        return WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL();
     }
     
     public String getAbsoluteSiteURL() {
-        return WebloggerRuntimeConfig.getAbsoluteContextURL();
+        return WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL();
     }
     
     public String getProp(String key) {
         // first try static config
         String value = WebloggerConfig.getProperty(key);
         if(value == null) {
-            value = WebloggerRuntimeConfig.getProperty(key);
+            value = WebloggerRuntimeConfigInstance.INSTANCE.getProperty(key);
         }
         
         return (value == null) ? key : value;
@@ -165,7 +165,7 @@ public abstract class UIAction extends ActionSupport
         // first try static config
         String value = WebloggerConfig.getProperty(key);
         if(value == null) {
-            value = WebloggerRuntimeConfig.getProperty(key);
+            value = WebloggerRuntimeConfigInstance.INSTANCE.getProperty(key);
         }
         
         return (value == null) ? false : Boolean.valueOf(value);
@@ -175,7 +175,7 @@ public abstract class UIAction extends ActionSupport
         // first try static config
         String value = WebloggerConfig.getProperty(key);
         if(value == null) {
-            value = WebloggerRuntimeConfig.getProperty(key);
+            value = WebloggerRuntimeConfigInstance.INSTANCE.getProperty(key);
         }
         
         return (value == null) ? 0 : Integer.valueOf(value);

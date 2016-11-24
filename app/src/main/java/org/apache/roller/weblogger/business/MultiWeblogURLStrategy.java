@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.util.URLUtilities;
 
@@ -58,10 +58,10 @@ public class MultiWeblogURLStrategy extends AbstractURLStrategy {
             if (weblogAbsoluteURL != null) {
                 url.append(weblogAbsoluteURL);
             } else {
-                url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+                url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
             }
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
 
         url.append("/").append(weblog.getHandle()).append("/");
@@ -378,9 +378,9 @@ public class MultiWeblogURLStrategy extends AbstractURLStrategy {
         StringBuilder url = new StringBuilder();
         
         if (absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         // json tags service base
@@ -438,24 +438,24 @@ public class MultiWeblogURLStrategy extends AbstractURLStrategy {
 
 
     public String getOpenSearchSiteURL() {
-        return WebloggerRuntimeConfig.getAbsoluteContextURL() + "/roller-services/opensearch/";
+        return WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL() + "/roller-services/opensearch/";
     }
 
 
     public String getOpenSearchWeblogURL(String weblogHandle) {
-        return WebloggerRuntimeConfig.getAbsoluteContextURL() + "/roller-services/opensearch/" + weblogHandle;
+        return WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL() + "/roller-services/opensearch/" + weblogHandle;
     }
 
     public String getOAuthRequestTokenURL() {
-        return WebloggerRuntimeConfig.getAbsoluteContextURL() + "/roller-services/oauth/requestToken";
+        return WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL() + "/roller-services/oauth/requestToken";
     }
 
     public String getOAuthAuthorizationURL() {
-        return WebloggerRuntimeConfig.getAbsoluteContextURL() + "/roller-services/oauth/authorize";
+        return WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL() + "/roller-services/oauth/authorize";
     }
 
     public String getOAuthAccessTokenURL() {
-        return WebloggerRuntimeConfig.getAbsoluteContextURL() + "/roller-services/oauth/accessToken";
+        return WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL() + "/roller-services/oauth/accessToken";
     }
     
 }

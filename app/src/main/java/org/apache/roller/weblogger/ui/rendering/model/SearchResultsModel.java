@@ -41,7 +41,7 @@ import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.search.FieldConstants;
 import org.apache.roller.weblogger.business.search.IndexManager;
 import org.apache.roller.weblogger.business.search.operations.SearchOperation;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.WeblogEntryWrapperComparator;
 import org.apache.roller.weblogger.pojos.wrapper.WeblogCategoryWrapper;
@@ -110,8 +110,8 @@ public class SearchResultsModel extends PageModel {
 		SearchOperation search = new SearchOperation(indexMgr);
 		search.setTerm(searchRequest.getQuery());
 
-		if (WebloggerRuntimeConfig.isSiteWideWeblog(searchRequest
-				.getWeblogHandle())) {
+        if (WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(searchRequest
+                .getWeblogHandle())) {
 			this.websiteSpecificSearch = false;
 		} else {
 			search.setWebsiteHandle(searchRequest.getWeblogHandle());

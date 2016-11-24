@@ -276,4 +276,16 @@ public class User implements Serializable {
         return new HashCodeBuilder().append(getUserName()).toHashCode();
     }
 
+    // for pindown tests
+    public String getStateAsString() {
+        return "User{" +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", openIdUrl='" + openIdUrl + '\'' +
+                ", screenName='" + screenName + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", emailAddress='" + emailAddress + '\'' +
+                ", enabled=" + enabled +
+                '}';
+    }
 }

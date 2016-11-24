@@ -34,7 +34,7 @@ import org.apache.roller.weblogger.business.URLStrategy;
 import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.MediaFile;
 import org.apache.roller.weblogger.pojos.MediaFileDirectory;
 import org.apache.roller.weblogger.pojos.User;
@@ -454,9 +454,9 @@ public class MetaWeblogAPIHandler extends BloggerAPIHandler {
     
     
     private Hashtable createPostStruct(WeblogEntry entry, String userid) {
-        
+
         String permalink =
-            WebloggerRuntimeConfig.getAbsoluteContextURL() + entry.getPermaLink();
+            WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL() + entry.getPermaLink();
         
         Hashtable struct = new Hashtable();
         struct.put("title", entry.getTitle());

@@ -18,17 +18,18 @@
 
 package org.apache.roller.weblogger.config;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.util.RollerConstants;
-import org.apache.roller.weblogger.config.runtime.RuntimeConfigDefs;
-import org.apache.roller.weblogger.config.runtime.RuntimeConfigDefsParser;
 import org.apache.roller.weblogger.business.PropertiesManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
+import org.apache.roller.weblogger.config.runtime.RuntimeConfigDefs;
+import org.apache.roller.weblogger.config.runtime.RuntimeConfigDefsParser;
 import org.apache.roller.weblogger.pojos.RuntimeConfigProperty;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 
 
 /**
@@ -39,27 +40,30 @@ import org.apache.roller.weblogger.pojos.RuntimeConfigProperty;
  * 
  * We also provide some methods for converting to different data types.
  */
-public final class WebloggerRuntimeConfig {
-    
-    private static Log log = LogFactory.getLog(WebloggerRuntimeConfig.class);
-    
-    private static String RUNTIME_CONFIG = "/org/apache/roller/weblogger/config/runtimeConfigDefs.xml";
-    private static RuntimeConfigDefs configDefs = null;
-    
+public class WebloggerRuntimeConfigInstance {
+
+    public static final WebloggerRuntimeConfigInstance INSTANCE = new WebloggerRuntimeConfigInstance();
+    private static final Log log = LogFactory.getLog(WebloggerRuntimeConfigInstance.class);
+
+    private static final String RUNTIME_CONFIG = "/org/apache/roller/weblogger/config/runtimeConfigDefs.xml";
+
+
+    private RuntimeConfigDefs configDefs = null;
+
     // special case for our context urls
-    private static String relativeContextURL = null;
-    private static String absoluteContextURL = null;
-    
-    
+    private String relativeContextURL = null;
+    private String absoluteContextURL = null;
+
+
     // prevent instantiations
-    private WebloggerRuntimeConfig() {}
+    private WebloggerRuntimeConfigInstance() {}
     
     
     /**
      * Retrieve a single property from the PropertiesManager ... returns null
      * if there is an error
      **/
-    public static String getProperty(String name) {
+    public String getProperty(String name) {
         
         String value = null;
         
@@ -82,10 +86,10 @@ public final class WebloggerRuntimeConfig {
     /**
      * Retrieve a property as a boolean ... defaults to false if there is an error
      **/
-    public static boolean getBooleanProperty(String name) {
+    public boolean getBooleanProperty(String name) {
         
         // get the value first, then convert
-        String value = WebloggerRuntimeConfig.getProperty(name);
+        String value = this.getProperty(name);
         
         if (value == null) {
             return false;
@@ -98,10 +102,10 @@ public final class WebloggerRuntimeConfig {
     /**
      * Retrieve a property as an int ... defaults to -1 if there is an error
      **/
-    public static int getIntProperty(String name) {
+    public int getIntProperty(String name) {
         
         // get the value first, then convert
-        String value = WebloggerRuntimeConfig.getProperty(name);
+        String value = this.getProperty(name);
         
         if (value == null) {
             return -1;
@@ -118,14 +122,14 @@ public final class WebloggerRuntimeConfig {
     }
     
     
-    public static RuntimeConfigDefs getRuntimeConfigDefs() {
+    public RuntimeConfigDefs getRuntimeConfigDefs() {
         
         if(configDefs == null) {
             
             // unmarshall the config defs file
             try {
                 InputStream is = 
-                        WebloggerRuntimeConfig.class.getResourceAsStream(RUNTIME_CONFIG);
+                        WebloggerRuntimeConfigInstance.class.getResourceAsStream(RUNTIME_CONFIG);
                 
                 RuntimeConfigDefsParser parser = new RuntimeConfigDefsParser();
                 configDefs = parser.unmarshall(is);
@@ -149,7 +153,7 @@ public final class WebloggerRuntimeConfig {
      * properties we change at runtime via the UI and how to setup
      * the display for editing those properties.
      */
-    public static String getRuntimeConfigDefsAsString() {
+    public String getRuntimeConfigDefsAsString() {
         
         log.debug("Trying to load runtime config defs file");
         
@@ -180,7 +184,7 @@ public final class WebloggerRuntimeConfig {
      *
      * This property is *not* persisted in any way.
      */
-    public static void setAbsoluteContextURL(String url) {
+    public void setAbsoluteContextURL(String url) {
         absoluteContextURL = url;
     }
     
@@ -192,7 +196,7 @@ public final class WebloggerRuntimeConfig {
      * property if it is set, otherwise it will return the non-persisted
      * value which is set by the InitFilter.
      */
-    public static String getAbsoluteContextURL() {
+    public String getAbsoluteContextURL() {
         
         // db prop takes priority if it exists
         String absURL = getProperty("site.absoluteurl");
@@ -209,12 +213,12 @@ public final class WebloggerRuntimeConfig {
      *
      * This property is *not* persisted in any way.
      */
-    public static void setRelativeContextURL(String url) {
+    public void setRelativeContextURL(String url) {
         relativeContextURL = url;
     }
     
     
-    public static String getRelativeContextURL() {
+    public String getRelativeContextURL() {
         return relativeContextURL;
     }
     
@@ -223,7 +227,7 @@ public final class WebloggerRuntimeConfig {
      * Convenience method for Roller classes trying to determine if a given
      * weblog handle represents the front page blog.
      */
-    public static boolean isFrontPageWeblog(String weblogHandle) {
+    public boolean isFrontPageWeblog(String weblogHandle) {
         
         String frontPageHandle = getProperty("site.frontpage.weblog.handle");
         
@@ -236,7 +240,7 @@ public final class WebloggerRuntimeConfig {
      * weblog handle represents the front page blog configured to render
      * site-wide data.
      */
-    public static boolean isSiteWideWeblog(String weblogHandle) {
+    public boolean isSiteWideWeblog(String weblogHandle) {
         
         boolean siteWide = getBooleanProperty("site.frontpage.weblog.aggregated");
         

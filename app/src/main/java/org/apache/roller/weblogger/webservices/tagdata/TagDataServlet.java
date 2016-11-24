@@ -33,7 +33,7 @@ import org.apache.roller.weblogger.business.Weblogger;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.WeblogManager;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.TagStat;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.util.Utilities;
@@ -83,7 +83,7 @@ public class TagDataServlet extends HttpServlet {
         if (pathInfo.length == 0) {
             siteWide = true;
             // we'll use the front-page weblog to form URLs
-            handle = WebloggerRuntimeConfig.getProperty("site.frontpage.weblog.handle");
+            handle = WebloggerRuntimeConfigInstance.INSTANCE.getProperty("site.frontpage.weblog.handle");
         } else if (pathInfo.length == 2 && "weblog".equals(pathInfo[0])) {
             siteWide = false;
             handle = pathInfo[1];

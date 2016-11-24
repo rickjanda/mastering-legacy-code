@@ -29,7 +29,7 @@ import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.WeblogPermission;
 import org.apache.roller.weblogger.ui.struts2.util.UIAction;
-import org.apache.roller.weblogger.util.MailUtil;
+import org.apache.roller.weblogger.util.MailUtilInstance;
 
 
 /**
@@ -124,9 +124,9 @@ public class MembersInvite extends UIAction {
 
                 addMessage("inviteMember.userInvited");
 
-                if (MailUtil.isMailConfigured()) {
+                if (MailUtilInstance.INSTANCE.isMailConfigured()) {
                     try {
-                        MailUtil.sendWeblogInvitation(getActionWeblog(), user);
+                        MailUtilInstance.INSTANCE.sendWeblogInvitation(getActionWeblog(), user);
                     } catch (WebloggerException e) {
                         // TODO: this should be an error except that struts2 misbehaves
                         // when we chain this action to the next one thinking that an error

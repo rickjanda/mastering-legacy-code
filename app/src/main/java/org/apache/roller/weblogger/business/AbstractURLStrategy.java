@@ -20,7 +20,8 @@ package org.apache.roller.weblogger.business;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.util.URLUtilities;
 
 
@@ -41,9 +42,9 @@ public abstract class AbstractURLStrategy implements URLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append("/roller-ui/login-redirect.rol");
@@ -60,9 +61,9 @@ public abstract class AbstractURLStrategy implements URLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append("/roller-ui/logout.rol");
@@ -78,9 +79,9 @@ public abstract class AbstractURLStrategy implements URLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append("/roller-ui/register.rol");
@@ -102,9 +103,9 @@ public abstract class AbstractURLStrategy implements URLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append(namespace);
@@ -138,9 +139,9 @@ public abstract class AbstractURLStrategy implements URLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append("/roller-ui/authoring/entryAdd.rol");
@@ -162,9 +163,9 @@ public abstract class AbstractURLStrategy implements URLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append("/roller-ui/authoring/entryEdit.rol");
@@ -186,9 +187,9 @@ public abstract class AbstractURLStrategy implements URLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append("/roller-ui/authoring/weblogConfig.rol");
@@ -205,9 +206,9 @@ public abstract class AbstractURLStrategy implements URLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append("/roller-services/xmlrpc");
@@ -221,9 +222,9 @@ public abstract class AbstractURLStrategy implements URLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append("/roller-services/app");

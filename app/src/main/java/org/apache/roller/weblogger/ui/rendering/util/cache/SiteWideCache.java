@@ -30,7 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.util.RollerConstants;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.WeblogBookmark;
 import org.apache.roller.weblogger.pojos.WeblogEntryComment;
 import org.apache.roller.weblogger.pojos.WeblogBookmarkFolder;
@@ -357,7 +357,7 @@ public final class SiteWideCache implements CacheHandler {
      * A bookmark has changed.
      */
     public void invalidate(WeblogBookmark bookmark) {
-        if(WebloggerRuntimeConfig.isSiteWideWeblog(bookmark.getWebsite().getHandle())) {
+        if(WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(bookmark.getWebsite().getHandle())) {
             invalidate(bookmark.getWebsite());
         }
     }
@@ -367,7 +367,7 @@ public final class SiteWideCache implements CacheHandler {
      * A folder has changed.
      */
     public void invalidate(WeblogBookmarkFolder folder) {
-        if(WebloggerRuntimeConfig.isSiteWideWeblog(folder.getWeblog().getHandle())) {
+        if(WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(folder.getWeblog().getHandle())) {
             invalidate(folder.getWeblog());
         }
     }
@@ -377,7 +377,7 @@ public final class SiteWideCache implements CacheHandler {
      * A comment has changed.
      */
     public void invalidate(WeblogEntryComment comment) {
-        if(WebloggerRuntimeConfig.isSiteWideWeblog(comment.getWeblogEntry().getWebsite().getHandle())) {
+        if(WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(comment.getWeblogEntry().getWebsite().getHandle())) {
             invalidate(comment.getWeblogEntry().getWebsite());
         }
     }
@@ -395,7 +395,7 @@ public final class SiteWideCache implements CacheHandler {
      * A category has changed.
      */
     public void invalidate(WeblogCategory category) {
-        if(WebloggerRuntimeConfig.isSiteWideWeblog(category.getWeblog().getHandle())) {
+        if(WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(category.getWeblog().getHandle())) {
             invalidate(category.getWeblog());
         }
     }
@@ -405,7 +405,7 @@ public final class SiteWideCache implements CacheHandler {
      * A weblog template has changed.
      */
     public void invalidate(WeblogTemplate template) {
-        if(WebloggerRuntimeConfig.isSiteWideWeblog(template.getWeblog().getHandle())) {
+        if(WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(template.getWeblog().getHandle())) {
             invalidate(template.getWeblog());
         }
     }

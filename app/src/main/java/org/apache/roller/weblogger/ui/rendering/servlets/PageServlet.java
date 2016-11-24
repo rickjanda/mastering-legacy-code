@@ -28,7 +28,7 @@ import org.apache.roller.weblogger.business.WeblogEntryManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.themes.ThemeManager;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.StaticThemeTemplate;
 import org.apache.roller.weblogger.pojos.TemplateRendition.TemplateLanguage;
 import org.apache.roller.weblogger.pojos.ThemeTemplate;
@@ -163,7 +163,7 @@ public class PageServlet extends HttpServlet {
             }
 
             // is this the site-wide weblog?
-            isSiteWide = WebloggerRuntimeConfig.isSiteWideWeblog(pageRequest
+            isSiteWide = WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(pageRequest
                     .getWeblogHandle());
         } catch (Exception e) {
             // some kind of error parsing the request or looking up weblog
@@ -461,7 +461,7 @@ public class PageServlet extends HttpServlet {
                     .getProperty("rendering.pageModels");
             ModelLoader.loadModels(pageModels, model, initData, true);
             // Load special models for site-wide blog
-            if (WebloggerRuntimeConfig.isSiteWideWeblog(weblog.getHandle())) {
+            if (WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(weblog.getHandle())) {
                 String siteModels = WebloggerConfig
                         .getProperty("rendering.siteModels");
                 ModelLoader.loadModels(siteModels, model, initData, true);
@@ -589,7 +589,7 @@ public class PageServlet extends HttpServlet {
         }
 
         // if this came from site-wide frontpage then skip it
-        if (WebloggerRuntimeConfig.isSiteWideWeblog(pageRequest
+        if (WebloggerRuntimeConfigInstance.INSTANCE.isSiteWideWeblog(pageRequest
                 .getWeblogHandle())) {
             return false;
         }
@@ -625,8 +625,7 @@ public class PageServlet extends HttpServlet {
         if (pageRequest.getWeblogHandle() != null) {
 
             // Base page URLs, with and without www.
-            String basePageUrlWWW = WebloggerRuntimeConfig
-                    .getAbsoluteContextURL()
+            String basePageUrlWWW = WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL()
                     + "/"
                     + pageRequest.getWeblogHandle();
             String basePageUrl = basePageUrlWWW;

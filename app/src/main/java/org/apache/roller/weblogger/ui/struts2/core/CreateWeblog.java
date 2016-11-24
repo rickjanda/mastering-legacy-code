@@ -27,7 +27,7 @@ import org.apache.roller.weblogger.business.UserManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.themes.ThemeManager;
 import org.apache.roller.weblogger.config.WebloggerConfig;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.pojos.WeblogPermission;
@@ -64,7 +64,7 @@ public class CreateWeblog extends UIAction {
     public String execute() {
 
         // check if blog administrator has enabled creation of new blogs
-        if(!WebloggerRuntimeConfig.getBooleanProperty("site.allowUserWeblogCreation")) {
+        if(!WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("site.allowUserWeblogCreation")) {
             addError("createWebsite.disabled");
             return DISABLED_RETURN_CODE;
         }
@@ -130,7 +130,7 @@ public class CreateWeblog extends UIAction {
                     getBean().getTimeZone());
             
             // pick a weblog editor for this weblog
-            String def = WebloggerRuntimeConfig.getProperty("users.editor.pages");
+            String def = WebloggerRuntimeConfigInstance.INSTANCE.getProperty("users.editor.pages");
             String[] defs = Utilities.stringToStringArray(def,",");
             wd.setEditorPage(defs[0]);
 

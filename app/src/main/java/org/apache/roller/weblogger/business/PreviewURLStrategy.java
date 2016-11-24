@@ -21,7 +21,8 @@ package org.apache.roller.weblogger.business;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.Weblog;
 import org.apache.roller.weblogger.pojos.WeblogTheme;
 import org.apache.roller.weblogger.util.URLUtilities;
@@ -54,9 +55,9 @@ public class PreviewURLStrategy extends MultiWeblogURLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append(PREVIEW_URL_SEGMENT).append(weblog.getHandle()).append("/");
@@ -91,9 +92,9 @@ public class PreviewURLStrategy extends MultiWeblogURLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append(PREVIEW_URL_SEGMENT).append(weblog.getHandle()).append("/");
@@ -133,9 +134,9 @@ public class PreviewURLStrategy extends MultiWeblogURLStrategy {
         Map params = new HashMap();
         
         if(absolute) {
-        	pathinfo.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            pathinfo.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-        	pathinfo.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            pathinfo.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         pathinfo.append(PREVIEW_URL_SEGMENT).append(weblog.getHandle()).append("/");
@@ -202,9 +203,9 @@ public class PreviewURLStrategy extends MultiWeblogURLStrategy {
         Map params = new HashMap();
         
         if(absolute) {
-            pathinfo.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            pathinfo.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            pathinfo.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            pathinfo.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         pathinfo.append(PREVIEW_URL_SEGMENT).append(weblog.getHandle()).append("/");
@@ -255,9 +256,9 @@ public class PreviewURLStrategy extends MultiWeblogURLStrategy {
         StringBuilder url = new StringBuilder();
         
         if(absolute) {
-            url.append(WebloggerRuntimeConfig.getAbsoluteContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
         } else {
-            url.append(WebloggerRuntimeConfig.getRelativeContextURL());
+            url.append(WebloggerRuntimeConfigInstance.INSTANCE.getRelativeContextURL());
         }
         
         url.append("/roller-ui/authoring/previewresource/").append(weblog.getHandle()).append("/");

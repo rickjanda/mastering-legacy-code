@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.business.OAuthManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.User;
 import org.apache.roller.weblogger.ui.struts2.util.UIAction;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -66,7 +66,7 @@ public class OAuthKeys extends UIAction {
                 siteWideConsumer = omgr.getConsumer();
                 if (siteWideConsumer == null) {
                     String consumerKey = DigestUtils.md5Hex(
-                        WebloggerRuntimeConfig.getAbsoluteContextURL());
+                            WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL());
                     siteWideConsumer = omgr.addConsumer(consumerKey);
                     flush = true;
                 }

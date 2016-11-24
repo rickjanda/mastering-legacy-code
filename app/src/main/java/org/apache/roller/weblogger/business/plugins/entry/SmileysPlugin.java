@@ -26,7 +26,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.roller.weblogger.WebloggerException;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.WeblogEntry;
 import org.apache.roller.weblogger.pojos.Weblog;
 
@@ -79,7 +79,7 @@ public class SmileysPlugin implements WeblogEntryPlugin {
     public synchronized void init(Weblog website) throws WebloggerException {
         // don't do this work if Smileys already loaded
         if (SmileysPlugin.smileyPatterns.length < 1) {
-            String baseURL = WebloggerRuntimeConfig.getAbsoluteContextURL();
+            String baseURL = WebloggerRuntimeConfigInstance.INSTANCE.getAbsoluteContextURL();
             
             Pattern[] tempP = new Pattern[SmileysPlugin.smileyDefs.size()];
             String[] tempS = new String[SmileysPlugin.smileyDefs.size()];

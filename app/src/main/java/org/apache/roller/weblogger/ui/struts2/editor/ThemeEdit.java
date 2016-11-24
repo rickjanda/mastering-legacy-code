@@ -29,7 +29,7 @@ import org.apache.roller.weblogger.business.WeblogManager;
 import org.apache.roller.weblogger.business.WebloggerFactory;
 import org.apache.roller.weblogger.business.themes.SharedTheme;
 import org.apache.roller.weblogger.business.themes.ThemeManager;
-import org.apache.roller.weblogger.config.WebloggerRuntimeConfig;
+import org.apache.roller.weblogger.config.WebloggerRuntimeConfigInstance;
 import org.apache.roller.weblogger.pojos.Theme;
 import org.apache.roller.weblogger.pojos.ThemeTemplate;
 import org.apache.roller.weblogger.pojos.ThemeTemplate.ComponentType;
@@ -124,8 +124,7 @@ public class ThemeEdit extends UIAction {
         if (WeblogTheme.CUSTOM.equals(getThemeType())) {
 
             // only continue if custom themes are allowed
-            if (WebloggerRuntimeConfig
-                    .getBooleanProperty("themes.customtheme.allowed")) {
+            if (WebloggerRuntimeConfigInstance.INSTANCE.getBooleanProperty("themes.customtheme.allowed")) {
 
                 // do theme import if necessary
                 SharedTheme t = null;
