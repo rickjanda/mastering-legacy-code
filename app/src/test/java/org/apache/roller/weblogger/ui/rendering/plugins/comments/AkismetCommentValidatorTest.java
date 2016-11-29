@@ -27,8 +27,8 @@ public class AkismetCommentValidatorTest {
         final AkismetCommentValidator validator = spy(new AkismetCommentValidator("apiKeyValue", null) );
 
         final ByteArrayInputStream streamWithTrue = new ByteArrayInputStream("true".getBytes());
-        doReturn(streamWithTrue).when(validator).getInputStreamFrom(Matchers.<URLConnection>anyObject());
-        doReturn(outputStream).when(validator).getOutputStreamFrom(Matchers.<URLConnection>anyObject());
+        doReturn(streamWithTrue).when(validator).getInputStreamFrom(any(URLConnection.class));
+        doReturn(outputStream).when(validator).getOutputStreamFrom(any(URLConnection.class));
         doReturn("1.0").when(validator).getWebLoggerVersion();
         doReturn("http://weblogurl.com").when(validator).getWeblogURL(weblog);
 
@@ -69,8 +69,8 @@ public class AkismetCommentValidatorTest {
         final AkismetCommentValidator validator = spy(new AkismetCommentValidator("apiKeyValue", null) );
 
         final ByteArrayInputStream streamWithFalse = new ByteArrayInputStream("false".getBytes());
-        doReturn(streamWithFalse).when(validator).getInputStreamFrom(Matchers.<URLConnection>anyObject());
-        doReturn(outputStream).when(validator).getOutputStreamFrom(Matchers.<URLConnection>anyObject());
+        doReturn(streamWithFalse).when(validator).getInputStreamFrom(any(URLConnection.class));
+        doReturn(outputStream).when(validator).getOutputStreamFrom(any(URLConnection.class));
         doReturn("1.0").when(validator).getWebLoggerVersion();
         doReturn("http://weblogurl.com").when(validator).getWeblogURL(weblog);
 
@@ -110,8 +110,8 @@ public class AkismetCommentValidatorTest {
 
         final AkismetCommentValidator validator = spy(new AkismetCommentValidator("apiKeyValue", null) );
 
-        doThrow(new IOException("simulated")).when(validator).getInputStreamFrom(Matchers.<URLConnection>anyObject());
-        doReturn(outputStream).when(validator).getOutputStreamFrom(Matchers.<URLConnection>anyObject());
+        doThrow(new IOException("simulated")).when(validator).getInputStreamFrom(any(URLConnection.class));
+        doReturn(outputStream).when(validator).getOutputStreamFrom(any(URLConnection.class));
         doReturn("1.0").when(validator).getWebLoggerVersion();
         doReturn("http://weblogurl.com").when(validator).getWeblogURL(weblog);
 
